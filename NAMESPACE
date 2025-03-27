@@ -2,6 +2,7 @@
 
 export(extract_min_date)
 export(extract_temporal_grain)
+export(make_env_stack)
 export(make_tar_id)
 export(make_targets)
 export(prepare_env)

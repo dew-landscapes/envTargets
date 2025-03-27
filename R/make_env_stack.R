@@ -1,0 +1,16 @@
+#' Make a spatRaster from env_df
+#'
+#' @param env_df tibble. Probably a result of `prepare_env()`.
+#'
+#' @return spatRaster
+#' @export
+#'
+#' @examples
+make_env_stack <- function(env_df) {
+
+  r <- terra::rast(env_df$path)
+  names(r) <- env_df$name
+
+  return(r)
+
+}
