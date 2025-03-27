@@ -1,0 +1,24 @@
+Package: envTargets
+Title: Help to maintain and run a targets workflow
+Version: 0.0.0.9000
+Authors@R:
+    c(
+    person(given = "Nigel",
+           family = "Willoughby",
+           role = c("aut", "cre"),
+           email = "nigel.willoughby@sa.gov.au"),
+    person(given = "Joel",
+            family = "Allan",
+            role = c("aut"),
+            email = "joel.allan@sa.gov.au"),
+    person(given = "Simeon",
+            family = "Zylinski",
+            role = c("aut"),
+            email = "simeon.zylinski@sa.gov.au")
+    )
+Description: The goal of envTargets is to help automate the creation,
+    execuation, and maintenance of targets workflows in other 'env' projects.
+License: GPL (>= 3) + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
