@@ -1,6 +1,7 @@
 #' Get the temporal grain from settings
 #'
-#' @param settings list. usually from yaml::read_yaml("settings/setup.yaml")
+#' @param settings list. usually from
+#' yaml::read_yaml("settings/setup.yaml")$grain
 #'
 #' @return Character. "year", "month" or "date"
 #' @export
@@ -8,17 +9,27 @@
 #' @examples
 extract_temporal_grain <- function(settings) {
 
-  if(grepl("Y", settings$context$grain$res_time)) {
+  index <- which(grepl("Y|M|D", settings))
 
-    "year"
+  if(index) {
 
-  } else if(grepl("M", settings$context$grain$res_time)) {
+    if(grepl("Y", settings[index])) {
 
-    "month"
+      "year"
 
-  } else if(grepl("D", settings$context$grain$res_time)) {
+    } else if(grepl("M", settings)) {
 
-    "date"
+      "month"
+
+    } else if(grepl("D", settings)) {
+
+      "date"
+
+    }
+
+  } else {
+
+    stop("Need a simple time period within 'settings', e.g. 'P1Y' or 'P1M'")
 
   }
 
