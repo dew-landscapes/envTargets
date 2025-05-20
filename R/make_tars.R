@@ -19,8 +19,8 @@
 #' @examples
 make_tars <- function(settings = "settings/setup.yaml"
                       , store_base = fs::path("..", "..", "out")
-                      , script_base = "."
-                      , target_pattern = "^\\d{3}_.*\\.R$"
+                      , project_base = here::here()
+                      , target_pattern = "\\d{3}_.*\\.R$"
                       , save_yaml = TRUE
                       ) {
 
@@ -28,12 +28,12 @@ make_tars <- function(settings = "settings/setup.yaml"
 
   # tars --------
   ## tars df ------
-  tars_df <- tibble::tibble(script = fs::dir_ls(script_base
+  tars_df <- tibble::tibble(script = fs::dir_ls(project_base
                                                 , regexp = target_pattern
                                                 )
                             ) |>
-    dplyr::mutate(project = purrr::map_chr(script, \(x) gsub("\\d{3}_|\\.R", "", x))
-                  , order = readr::parse_number(script)
+    dplyr::mutate(project = purrr::map_chr(script, \(x) gsub("\\d{3}_|\\.R", "", basename(x)))
+                  , order = readr::parse_number(basename(script))
                   , store = envTargets::store_dir(set_list = set_list
                                                   , base_dir = store_base
                                                   )

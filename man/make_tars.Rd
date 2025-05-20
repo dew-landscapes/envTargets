@@ -7,8 +7,8 @@
 make_tars(
   settings = "settings/setup.yaml",
   store_base = fs::path("..", "..", "out"),
-  script_base = ".",
-  target_pattern = "^\\\\d{3}_.*\\\\.R$",
+  project_base = here::here(),
+  target_pattern = "\\\\d{3}_.*\\\\.R$",
   save_yaml = TRUE
 )
 }
