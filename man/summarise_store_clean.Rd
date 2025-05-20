@@ -5,9 +5,10 @@
 \title{Summarise a cleaning workflow from a targets store}
 \usage{
 summarise_store_clean(
-  store = ".",
+  tars = NULL,
+  tars_name = "clean",
   prefix = "bio_",
-  excludes = c("path", "file", "env", "rich"),
+  excludes = c("path", "dir", "file", "env", "rich"),
   extras = c("clean_end"),
   site_cols = c("cell_lat", "cell_long"),
   visit_cols = c("cell_lat", "cell_long", "year"),
@@ -15,11 +16,12 @@ summarise_store_clean(
 )
 }
 \arguments{
-\item{store}{path to a \href{https://books.ropensci.org/targets/}{targets} store
-(i.e. the \code{store} argument to \code{targets::tar_meta()})}
+\item{tars}{Named list of target stores and scripts}
 
-\item{prefix}{Object name prefixes. Objects within the \code{store} that match
-this will be summarised}
+\item{tars_name}{Name of \code{tars} element to summarise}
+
+\item{prefix}{Object name prefixes. Objects within \code{tars[[tars_name]]$store}
+that match this will be summarised}
 
 \item{excludes}{Any object that matches any regex provided in \code{excludes} will
 not be summarised}

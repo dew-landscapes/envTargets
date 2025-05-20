@@ -1,10 +1,10 @@
 
 #' Summarise a cleaning workflow from a targets store
 #'
-#' @param store path to a [targets](https://books.ropensci.org/targets/) store
-#' (i.e. the `store` argument to `targets::tar_meta()`)
-#' @param prefix Object name prefixes. Objects within the `store` that match
-#' this will be summarised
+#' @param tars Named list of target stores and scripts
+#' @param tars_name Name of `tars` element to summarise
+#' @param prefix Object name prefixes. Objects within `tars[[tars_name]]$store`
+#' that match this will be summarised
 #' @param excludes Any object that matches any regex provided in `excludes` will
 #' not be summarised
 #' @param extras Any object that matches any regex provided in `extras` will be
@@ -16,21 +16,32 @@
 #' @export
 #'
 #' @examples
-summarise_store_clean <- function(store = "."
-                                  , prefix = "bio_"
-                                  , excludes = c("path", "file", "env", "rich")
-                                  , extras = c("clean_end")
-                                  , site_cols = c("cell_lat", "cell_long")
-                                  , visit_cols = c("cell_lat", "cell_long", "year")
-                                  , taxa_cols = "taxa"
-                                  ) {
+summarise_store_data <- function(tars = NULL
+                                 , tars_name = "clean"
+                                 , prefix = "bio_"
+                                 , excludes = c("path", "dir", "file", "env", "rich")
+                                 , extras = c("clean_end")
+                                 , site_cols = c("cell_lat", "cell_long")
+                                 , visit_cols = c("cell_lat", "cell_long", "year")
+                                 , taxa_cols = "taxa"
+                                 ) {
 
   keeps <- paste0(paste0("^", prefix)
                   , if(!is.null(extras)) paste0("|", paste0(unique(extras), collapse = "|")) else NULL
                   )
 
+  if(is.null(tars)) {
+
+    tars <- yaml::read_yaml("_targets.yaml")
+
+  }
+
+  store <- tars[[tars_name]]$store
+
   store |>
-    tar_meta(store = _) |>
+    tar_meta(store = _
+             , targets_only = TRUE
+             ) |>
     dplyr::filter(grepl(keeps, name)) |>
     dplyr::filter(! grepl(paste0(excludes, collapse = "|"), name)) |>
     dplyr::select(name, warnings, path) |>
@@ -47,7 +58,7 @@ summarise_store_clean <- function(store = "."
                                                                         )
                                        )
                   , path = fs::path(store, "objects", name)
-                  , rmd = here::here("report", "child", "clean", paste0(gsub(prefix, "", name), ".Rmd"))
+                  , rmd = here::here("report", "child", tars_name, paste0(gsub(prefix, "", name), ".Rmd"))
                   ) |>
     tidyr::unnest(cols = c(summary)) |>
     dplyr::arrange(desc(taxa), desc(visits), desc(sites)) |>
