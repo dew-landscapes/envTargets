@@ -47,7 +47,7 @@ make_tars <- function(settings = "settings/setup.yaml"
 
     out_yml <- tempfile(fileext = ".yaml")
 
-    Sys.setenv(TAR_CONFIG = tmp_yml)
+    Sys.setenv(TAR_CONFIG = out_yml)
 
   } else {
 
