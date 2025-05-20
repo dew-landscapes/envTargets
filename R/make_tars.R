@@ -36,6 +36,7 @@ make_tars <- function(settings = "settings/setup.yaml"
                   , order = readr::parse_number(basename(script))
                   , store = envTargets::store_dir(set_list = set_list
                                                   , base_dir = store_base
+                                                  , project = basename(project_base)
                                                   )
                   , store = fs::path(store, project)
                   ) |>
