@@ -4,10 +4,12 @@
 \alias{make_env_stack}
 \title{Make a spatRaster from env_df}
 \usage{
-make_env_stack(env_df)
+make_env_stack(env_df, aoi = NULL)
 }
 \arguments{
 \item{env_df}{tibble. Probably a result of \code{prepare_env()}.}
+
+\item{aoi}{sf defining an area of interest}
 }
 \value{
 spatRaster

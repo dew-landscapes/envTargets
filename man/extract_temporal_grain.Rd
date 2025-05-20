@@ -7,7 +7,8 @@
 extract_temporal_grain(settings)
 }
 \arguments{
-\item{settings}{list. usually from yaml::read_yaml("settings/setup.yaml")}
+\item{settings}{list. usually from
+yaml::read_yaml("settings/setup.yaml")$grain}
 }
 \value{
 Character. "year", "month" or "date"
