@@ -35,8 +35,8 @@ render_with_deps <- function(input_directory = "."
   }
 
   xfun::in_dir(input_directory
-               , bookdown::render_book(input = fs::path(input_directory, "index.Rmd")
-                                       , config_file = fs::path(input_directory, "_bookdown.yaml")
+               , bookdown::render_book(input = fs::path("index.Rmd")
+                                       , config_file = fs::path("_bookdown.yaml")
                                        )
                )
 

@@ -9,12 +9,12 @@
 ##' @author Shir Dekel (modified by nw)
 ##' @export
 get_deps <- function() {
-  
+
   rmd <- fs::dir_ls(path = here::here("report")
                     , regexp = "Rmd$|rmd$|RMD$"
                     , recurse = TRUE
                     )
-  
-  lst(rmd)
-  
+
+  list(rmd)
+
 }
