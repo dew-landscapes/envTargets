@@ -28,7 +28,7 @@ make_targets <- function(settings = "settings/setup.yaml"
   tars_df <- tibble::tibble(script = fs::dir_ls(regexp = target_pattern)) |>
     dplyr::mutate(project = purrr::map_chr(script, \(x) gsub("\\d{3}_|\\.R", "", x))
                   , order = readr::parse_number(script)
-                  , store = envFunc::store_dir(set_list = set_list
+                  , store = envTargets::store_dir(set_list = set_list
                                                , base_dir = base_dir
                                                )
                   , store = fs::path(store, project)
