@@ -63,7 +63,7 @@ summarise_store_data <- function(tars = NULL
                                                                         )
                                        )
                   , path = fs::path(store, "objects", name)
-                  , rmd = here::here("report", "child", tars_name, paste0(gsub(prefix, "", name), ".Rmd"))
+                  , rmd = here::here("report", "child", rmd_dir, paste0(gsub(prefix, "", name), ".Rmd"))
                   ) |>
     tidyr::unnest(cols = c(summary)) |>
     dplyr::arrange(desc(taxa), desc(visits), desc(sites)) |>
