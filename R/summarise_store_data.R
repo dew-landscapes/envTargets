@@ -11,6 +11,8 @@
 #' summarised
 #' @param site_cols,visit_cols,taxa_cols Columns within objects identifying
 #' sites, visits and taxa respectively
+#' @param rmd_dir What directory is the Rmd associated with each object found?
+#' If left as `NULL`, will use `tars_name`.
 #'
 #' @return
 #' @export
@@ -24,7 +26,10 @@ summarise_store_data <- function(tars = NULL
                                  , site_cols = c("cell_lat", "cell_long")
                                  , visit_cols = c("cell_lat", "cell_long", "year")
                                  , taxa_cols = "taxa"
+                                 , rmd_dir = NULL
                                  ) {
+
+  if(is.null(rmd_dir)) rmd_dir <- tars_name
 
   keeps <- paste0(paste0("^", prefix)
                   , if(!is.null(extras)) paste0("|", paste0(unique(extras), collapse = "|")) else NULL

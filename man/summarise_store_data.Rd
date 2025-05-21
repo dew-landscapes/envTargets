@@ -12,7 +12,8 @@ summarise_store_data(
   extras = c("clean_end"),
   site_cols = c("cell_lat", "cell_long"),
   visit_cols = c("cell_lat", "cell_long", "year"),
-  taxa_cols = "taxa"
+  taxa_cols = "taxa",
+  rmd_dir = NULL
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ summarised}
 
 \item{site_cols, visit_cols, taxa_cols}{Columns within objects identifying
 sites, visits and taxa respectively}
+
+\item{rmd_dir}{What directory is the Rmd associated with each object found?
+If left as \code{NULL}, will use \code{tars_name}.}
 }
 \description{
 Summarise a cleaning workflow from a targets store
