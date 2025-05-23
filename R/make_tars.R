@@ -28,8 +28,8 @@ make_tars <- function(settings = "settings/setup.yaml"
                       , store_base = fs::path("..", "..", "out")
                       , project_base = here::here()
                       , target_pattern = "\\d{3}_.*\\.R$"
-                      , save_yaml = TRUE
-                      , local = save_yaml
+                      , local = TRUE
+                      , save_yaml = local
                       , list_names = c("extent", "grain")
                       ) {
 

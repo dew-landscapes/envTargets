@@ -9,8 +9,8 @@ make_tars(
   store_base = fs::path("..", "..", "out"),
   project_base = here::here(),
   target_pattern = "\\\\d{3}_.*\\\\.R$",
-  save_yaml = TRUE,
-  local = save_yaml,
+  local = TRUE,
+  save_yaml = local,
   list_names = c("extent", "grain")
 )
 }
@@ -25,10 +25,10 @@ named, nested list will be \code{yaml::read_yaml(settings)}. Needs named element
 \item{target_pattern}{Character. Regexp to find targets \link{'project files'}
 (https://books.ropensci.org/targets/projects.html#project-files).}
 
-\item{save_yaml}{Logical. Save \verb{_targets.yaml} from within \code{make_tars()}?}
-
 \item{local}{Logical. If \code{local}, the project names is not included within
 each tars element.}
+
+\item{save_yaml}{Logical. Save \verb{_targets.yaml} from within \code{make_tars()}?}
 
 \item{list_names}{Character string of names used to extract elements of
 \code{settings} to include in the store structure. Defaults to \code{extent} and
