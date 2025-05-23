@@ -6,10 +6,17 @@
 #'
 #' @param settings Character path to yaml settings file or named, nested list.
 #' Passed to `set_list` argument of `envFunc::name_env_out()`. If character, the
-#' named, nested list will be `yaml::read_yaml(settings)$context`
+#' named, nested list will be `yaml::read_yaml(settings)`. Needs named elements
+#' `extent` and `grain` somewhere in the list.
 #' @param store_base Character. Path at which to create the store.
 #' @param target_pattern Character. Regexp to find targets ['project files']
 #' (https://books.ropensci.org/targets/projects.html#project-files).
+#' @param save_yaml Logical. Save `_targets.yaml` from within `make_tars()`?
+#' @param local Logical. If `local`, the project names is not included within
+#' each tars element.
+#' @param list_names Character string of names used to extract elements of
+#' `settings` to include in the store structure. Defaults to `extent` and
+#' `grain`.
 #'
 #'
 #' @return list of 'projects' each with elements 'script' and 'store'. Saves
@@ -22,9 +29,29 @@ make_tars <- function(settings = "settings/setup.yaml"
                       , project_base = here::here()
                       , target_pattern = "\\d{3}_.*\\.R$"
                       , save_yaml = TRUE
+                      , local = save_yaml
+                      , list_names = c("extent", "grain")
                       ) {
 
-  set_list <- if(is.character(settings)) yaml::read_yaml(settings)$context else settings
+  # from https://stackoverflow.com/questions/58400176/r-find-object-by-name-in-deeply-nested-list
+  find_name <- function(haystack, needle) {
+   if (hasName(haystack, needle)) {
+     haystack[[needle]]
+   } else if (is.list(haystack)) {
+     for (obj in haystack) {
+       ret <- Recall(obj, needle)
+       if (!is.null(ret)) return(ret)
+     }
+   } else {
+     NULL
+   }
+  }
+
+  if(is.character(settings)) settings <- yaml::read_yaml(settings)
+
+  set_list <- list_names |>
+    purrr::map(\(x) find_name(settings, x)) |>
+    purrr::set_names(list_names)
 
   # tars --------
   ## tars df ------
@@ -65,6 +92,9 @@ make_tars <- function(settings = "settings/setup.yaml"
 
   ## tars list ------
   tars <- yaml::read_yaml(out_yml)
+
+  if(!local) tars <- list(tars) |>
+    purrr::set_names(basename(project_base))
 
   return(tars)
 
