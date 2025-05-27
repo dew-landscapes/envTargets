@@ -33,24 +33,10 @@ make_tars <- function(settings = "settings/setup.yaml"
                       , list_names = c("extent", "grain")
                       ) {
 
-  # from https://stackoverflow.com/questions/58400176/r-find-object-by-name-in-deeply-nested-list
-  find_name <- function(haystack, needle) {
-   if (hasName(haystack, needle)) {
-     haystack[[needle]]
-   } else if (is.list(haystack)) {
-     for (obj in haystack) {
-       ret <- Recall(obj, needle)
-       if (!is.null(ret)) return(ret)
-     }
-   } else {
-     NULL
-   }
-  }
-
   if(is.character(settings)) settings <- yaml::read_yaml(settings)
 
   set_list <- list_names |>
-    purrr::map(\(x) find_name(settings, x)) |>
+    purrr::map(\(x) envFunc::find_name(settings, x)) |>
     purrr::set_names(list_names)
 
   # tars --------
