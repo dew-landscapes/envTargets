@@ -13,6 +13,7 @@
 #' sites, visits and taxa respectively
 #' @param rmd_dir What directory is the Rmd associated with each object found?
 #' If left as `NULL`, will use `tars_name`.
+#' @param deps Dependencies that, if updated, should invalidate the output.
 #'
 #' @return
 #' @export
@@ -27,6 +28,7 @@ summarise_store_data <- function(tars = NULL
                                  , visit_cols = c("cell_lat", "cell_long", "year")
                                  , taxa_cols = "taxa"
                                  , rmd_dir = NULL
+                                 , deps = NULL
                                  ) {
 
   if(is.null(rmd_dir)) rmd_dir <- tars_name

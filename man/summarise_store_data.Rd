@@ -13,7 +13,8 @@ summarise_store_data(
   site_cols = c("cell_lat", "cell_long"),
   visit_cols = c("cell_lat", "cell_long", "year"),
   taxa_cols = "taxa",
-  rmd_dir = NULL
+  rmd_dir = NULL,
+  deps = NULL
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ sites, visits and taxa respectively}
 
 \item{rmd_dir}{What directory is the Rmd associated with each object found?
 If left as \code{NULL}, will use \code{tars_name}.}
+
+\item{deps}{Dependencies that, if updated, should invalidate the output.}
 }
 \description{
 Summarise a cleaning workflow from a targets store
