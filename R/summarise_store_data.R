@@ -68,7 +68,7 @@ summarise_store_data <- function(tars = NULL
                   , rmd = here::here("report", "child", rmd_dir, paste0(gsub(prefix, "", name), ".Rmd"))
                   ) |>
     tidyr::unnest(cols = c(summary)) |>
-    dplyr::arrange(desc(taxa), desc(visits), desc(sites)) |>
+    dplyr::arrange(desc(taxa), desc(records), desc(visits), desc(sites)) |>
     dplyr::select(! dplyr::where(is.list))
 
 }
