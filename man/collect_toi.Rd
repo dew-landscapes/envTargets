@@ -9,8 +9,9 @@ collect_toi(
   toi_regex = "\\\\/toi",
   exclude = NULL,
   include = NULL,
-  keep_previous = TRUE,
-  store_path
+  collect_previous = TRUE,
+  store_path,
+  obj_prefix = "tune_"
 )
 }
 \arguments{
@@ -26,6 +27,15 @@ the resulting vector.}
 \item{include}{Character. Vector of taxa used to limit the resulting
 vector. i.e. only taxa that appear in \code{include} will make it into the
 resulting vector.}
+
+\item{collect_previous}{Logical. Should any previous toi for this extent and
+grain be collected into the output toi?}
+
+\item{store_path}{Character. Path to targets store directory used to find any
+previous toi.}
+
+\item{obj_prefix}{Character. A prefix that can identify taxa to include in
+toi from within \code{store_path}.}
 }
 \value{
 Character vector

@@ -11,6 +11,12 @@
 #' @param include Character. Vector of taxa used to limit the resulting
 #' vector. i.e. only taxa that appear in `include` will make it into the
 #' resulting vector.
+#' @param collect_previous Logical. Should any previous toi for this extent and
+#' grain be collected into the output toi?
+#' @param store_path Character. Path to targets store directory used to find any
+#' previous toi.
+#' @param obj_prefix Character. A prefix that can identify taxa to include in
+#' toi from within `store_path`.
 #'
 #' @return Character vector
 #' @export
@@ -20,15 +26,24 @@ collect_toi <- function(dir = "settings"
                         , toi_regex = "\\/toi"
                         , exclude = NULL
                         , include = NULL
-                        , keep_previous = TRUE
+                        , collect_previous = TRUE
                         , store_path
+                        , obj_prefix = "tune_"
                         ) {
 
-  previous <- if(keep_previous) {
+  previous <- if(collect_previous) {
 
-    if(file.exists(fs::path(store_path, "objects", "toi"))) {
+    if(file.exists(store_path)) {
 
-      tar_read(toi, store = store_path)
+      targets::tar_meta(tidyselect::starts_with(obj_prefix)
+                        , store = store_path
+                        , targets_only = TRUE
+                        ) |>
+        dplyr::pull(name) |>
+        gsub(obj_prefix, "", x = _) |>
+        gsub("_", " ", x = _) |>
+        unique() |>
+        sort()
 
     } else NULL
 
