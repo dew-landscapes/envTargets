@@ -26,7 +26,11 @@ collect_toi <- function(dir = "settings"
 
   previous <- if(keep_previous) {
 
-    tar_read(toi, store = store_path)
+    if(file.exists(fs::path(store_path, "objects", "toi"))) {
+
+      tar_read(toi, store = store_path)
+
+    } else NULL
 
   } else NULL
 
