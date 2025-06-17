@@ -29,9 +29,9 @@ collect_toi <- function(dir = "settings"
     unique() |>
     sort()
 
-  if(!is.null(other_df)) {
+  if(!is.null(other_taxa)) {
 
-    keep_taxa <- sort(unique(other_taxa)) |>
+    keep_taxa <- other_taxa |>
       intersect(keep_taxa)
 
   }
