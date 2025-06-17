@@ -16,8 +16,12 @@ write_tars <- function(tars) {
                    , here::here("_targets.yaml")
                    )
   
+  store_dir <- dirname(tars[[1]]$store)
+
+  fs::dir_create(store_dir)
+
   yaml::write_yaml(tars
-                   , fs::path(dirname(tars[[1]]$store), "_targets.yaml")
+                   , fs::path(store_dir, "_targets.yaml")
                    )
   
   return(invisible(NULL))
