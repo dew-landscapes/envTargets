@@ -7,9 +7,10 @@
 collect_toi(
   dir = "settings",
   toi_regex = "\\\\/toi",
-  environ_df = NULL,
-  environ_remove = "marine",
-  other_taxa = NULL
+  exclude = NULL,
+  include = NULL,
+  keep_previous = TRUE,
+  store_path
 )
 }
 \arguments{
@@ -18,12 +19,12 @@ collect_toi(
 \item{toi_regex}{Regular expression that will pick up any yaml files
 containing the taxa of interest.}
 
-\item{environ_df}{Dataframe of environments (e.g. terrestrial, marine).}
+\item{exclude}{Character. Vector of taxa used to limit the resulting
+vector. i.e. only taxa that do not appear in \code{exlude} will make it into
+the resulting vector.}
 
-\item{environ_remove}{Character. Vector of environments to remove.}
-
-\item{other_taxa}{Character. Vector of taxa used to limit the resulting
-vector. i.e. only taxa that appear in \code{other_taxa} will make it into the
+\item{include}{Character. Vector of taxa used to limit the resulting
+vector. i.e. only taxa that appear in \code{include} will make it into the
 resulting vector.}
 }
 \value{
