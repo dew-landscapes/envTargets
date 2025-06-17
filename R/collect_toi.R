@@ -38,7 +38,7 @@ collect_toi <- function(dir = "settings"
 
   if(!is.null(environ_df)) {
 
-    keep_taxa <- environs |>
+    keep_taxa <- environ_df |>
       dplyr::filter(! grepl(paste0(environ_remove, collapse = "|")
                             , environ
                             )
