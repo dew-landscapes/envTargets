@@ -16,7 +16,7 @@ make_env_stack <- function(env_df
 
   if(! is.null(aoi)) {
 
-    terra::window(r) <- terra::ext(aoi_sf |> sf::st_transform(crs = sf::st_crs(r)))
+    terra::window(r) <- terra::ext(aoi |> sf::st_transform(crs = sf::st_crs(r)))
 
   }
 
