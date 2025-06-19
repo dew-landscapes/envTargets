@@ -4,14 +4,7 @@
 \alias{collect_values}
 \title{Create a vector of values from a targets store object}
 \usage{
-collect_values(
-  dir,
-  object,
-  column,
-  collect_col,
-  exclude = NULL,
-  include = NULL
-)
+collect_values(dir, object, collect_col, exclude = NULL, include = NULL)
 }
 \arguments{
 \item{dir}{Directory containing targets store(s).}

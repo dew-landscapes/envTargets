@@ -19,7 +19,6 @@
 #' @examples
 collect_values <- function(dir
                            , object
-                           , column
                            , collect_col
                            , exclude = NULL
                            , include = NULL
