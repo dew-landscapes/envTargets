@@ -25,20 +25,14 @@ collect_values <- function(dir
                            ) {
 
   results <- fs::dir_ls(dir
-                     , regexp = paste0("objects\\/.*", object, collapse = "|")
-                     , recurse = TRUE
-                     , type = "file"
-                     )
+                        , regexp = paste0(object, collapse = "|")
+                        , recurse = TRUE
+                        , type = "file"
+                        ) |>
+    grep("\\/objects\\/", x = _, value = TRUE)
 
-  stores <- results |>
-    dirname(path = _) |>
-    dirname(path = _)
-
-  objects <- results |>
-    basename(path = _)
-
-  keep <- purrr::map2(stores
-                       , objects
+  keep <- purrr::map2(dirname(dirname(results))
+                       , basename(results)
                        , \(x, y) targets::tar_read_raw(y, store = x)
                        ) |>
     dplyr::bind_rows() |>
