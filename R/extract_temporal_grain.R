@@ -17,11 +17,11 @@ extract_temporal_grain <- function(settings) {
 
       "year"
 
-    } else if(grepl("M", settings)) {
+    } else if(grepl("M", settings[index])) {
 
       "month"
 
-    } else if(grepl("D", settings)) {
+    } else if(grepl("D", settings[index])) {
 
       "date"
 
