@@ -14,6 +14,7 @@
 #' @param rmd_dir What directory is the Rmd associated with each object found?
 #' If left as `NULL`, will use `tars_name`.
 #' @param deps Dependencies that, if updated, should invalidate the output.
+#' @param use_arrow Use `arrow::open_dataset()` instead of `tar_read_raw` on store objects. Saves memory, but requires targets to be saved as parquets (with no file extension).
 #'
 #' @return
 #' @export
@@ -29,6 +30,7 @@ summarise_store_data <- function(tars = NULL
                                  , taxa_cols = "taxa"
                                  , rmd_dir = NULL
                                  , deps = NULL
+                                 , use_arrow = TRUE
                                  ) {
 
   if(is.null(rmd_dir)) rmd_dir <- tars_name
@@ -53,7 +55,14 @@ summarise_store_data <- function(tars = NULL
     dplyr::filter(! grepl(paste0(excludes, collapse = "|"), name)) |>
     dplyr::select(name, warnings, path) |>
     tidyr::unnest(cols = c(path)) |>
-    dplyr::mutate(obj = purrr::map(name, \(x) tar_read_raw(x, store = store))
+    dplyr::mutate(obj = purrr::map(name,
+                                   \(x) {
+                                     if(use_arrow) {
+                                       arrow::open_dataset(fs::path(store, "objects", x)) |>
+                                         dplyr::select(tidyselect::any_of(c(visit_cols, site_cols, taxa_cols))) |>
+                                         dplyr::collect()
+                                     } else tar_read_raw(x, store = store)
+                                   } )
                   , class = purrr::map(obj, \(x) class(x))
                   ) |>
     dplyr::filter(purrr::map_lgl(class, \(x) "data.frame" %in% x)) |>

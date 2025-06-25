@@ -14,7 +14,8 @@ summarise_store_data(
   visit_cols = c("cell_lat", "cell_long", "year"),
   taxa_cols = "taxa",
   rmd_dir = NULL,
-  deps = NULL
+  deps = NULL,
+  use_arrow = TRUE
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ sites, visits and taxa respectively}
 If left as \code{NULL}, will use \code{tars_name}.}
 
 \item{deps}{Dependencies that, if updated, should invalidate the output.}
+
+\item{use_arrow}{Use \code{arrow::open_dataset()} instead of \code{tar_read_raw} on store objects. Saves memory, but requires targets to be saved as parquets (with no file extension).}
 }
 \description{
 Summarise a cleaning workflow from a targets store
