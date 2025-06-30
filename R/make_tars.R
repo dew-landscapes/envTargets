@@ -26,7 +26,7 @@
 #' @examples
 make_tars <- function(settings = "settings/setup.yaml"
                       , store_base = fs::path("..", "..", "out")
-                      , project_base = here::here()
+                      , project_base = fs::path("..", basename(here::here()))
                       , target_pattern = "\\d{3}_.*\\.R$"
                       , local = TRUE
                       , save_yaml = local
