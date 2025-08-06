@@ -23,7 +23,10 @@ prepare_env <- function(set_list
     dplyr::pull(path) %>%
     envRaster::name_env_tif(parse = TRUE, skips = "base|DEW__SDM") %>%
     dplyr::mutate(start_date = as.Date(start_date)) %>%
-    dplyr::left_join(envFunc::make_seasons(base_year, base_year)$seasons)
+    dplyr::left_join(envFunc::make_seasons(base_year, base_year
+                                           , include_all = TRUE
+                                           )$seasons
+                     )
 
 }
 
