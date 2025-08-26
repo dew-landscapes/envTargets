@@ -14,7 +14,7 @@
 #'
 #' @examples
 make_tile_extents <- function(base_grid_path
-                              , aoi
+                              , aoi = NULL
                               , tile_size = 100000
                               , min_tiles = 4
                               , add_hectares = TRUE

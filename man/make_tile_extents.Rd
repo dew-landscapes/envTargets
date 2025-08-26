@@ -6,7 +6,7 @@
 \usage{
 make_tile_extents(
   base_grid_path,
-  aoi,
+  aoi = NULL,
   tile_size = 1e+05,
   min_tiles = 4,
   add_hectares = TRUE
