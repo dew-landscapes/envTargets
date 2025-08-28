@@ -7,6 +7,8 @@
 make_tile_extents(
   base_grid_path,
   aoi = NULL,
+  tile_name = "tile__",
+  tile_length = 512,
   tile_size = 1e+05,
   min_tiles = 4,
   add_hectares = TRUE
@@ -15,13 +17,18 @@ make_tile_extents(
 \arguments{
 \item{base_grid_path}{Character. Path to a template raster.}
 
-\item{aoi}{Optional sf object. Used to define the outer extent of tiles}
+\item{aoi}{Optional sf object. Used to define the outer extent of tiles'}
 
-\item{tile_size}{Numeric. Tile size in units of the raster at \code{base_grid_path}}
+\item{tile_name}{Character. Prefix for the (file) name of each tile.}
 
-\item{min_tiles}{Numeric. Minimum number of tiles to return. If \code{tile_size}
-returns less than \code{min_tiles}, then \code{min_tiles} will be used instead of
-\code{tile_size}}
+\item{tile_length}{Numeric. Number of rows and columns in each tile.}
+
+\item{tile_size}{Numeric. Ignored if tile_length is not \code{NULL}. Tile size in
+units of the raster at \code{base_grid_path}.}
+
+\item{min_tiles}{Numeric. Ignored if tile_length is not \code{NULL}. Minimum
+number of tiles to return. If \code{tile_size} returns less than \code{min_tiles}, then
+\code{min_tiles} will be used instead of \code{tile_size}.}
 
 \item{add_hectares}{Logical. Append the hectares of each tile? Ignored if
 the raster at \code{base_grid_path} is not projected.}
