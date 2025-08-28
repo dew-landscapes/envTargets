@@ -29,8 +29,6 @@ predict_terra_tiles <- function(extent
                                 , out_dir
                                 , force_new = TRUE
                                 , load_packages = NULL
-                                , tile_name = "tile_"
-                                , tile_power = 4
                                 , ...
                                 ) {
 
@@ -43,10 +41,7 @@ predict_terra_tiles <- function(extent
   }
 
   out_file <- fs::path(out_dir
-                       , paste0(tile_name
-                                , stringr::str_pad(extent$tile_name[[1]], width = tile_power, pad = "0")
-                                , ".tif"
-                                )
+                       , paste0(extent[1, "tile_name"], ".tif")
                        )
 
   if(any(!file.exists(out_file), force_new)) {
