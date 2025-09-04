@@ -23,7 +23,7 @@
 summarise_store_data <- function(tars = NULL
                                  , tars_name = "clean"
                                  , prefix = "bio_"
-                                 , excludes = c("path", "dir", "file", "env", "rich")
+                                 , excludes = c("path", "dir", "file", "env", "rich", "names")
                                  , extras = c("clean_end")
                                  , site_cols = c("cell_lat", "cell_long")
                                  , visit_cols = c("cell_lat", "cell_long", "year")
@@ -53,6 +53,7 @@ summarise_store_data <- function(tars = NULL
              ) |>
     dplyr::filter(grepl(keeps, name)) |>
     dplyr::filter(! grepl(paste0(excludes, collapse = "|"), name)) |>
+    dplyr::filter(type == "stem") |>
     dplyr::select(name, warnings, path) |>
     tidyr::unnest(cols = c(path)) |>
     dplyr::mutate(obj = purrr::map(name,
