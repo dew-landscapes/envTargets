@@ -2,13 +2,13 @@
 % Please edit documentation in R/combine_tiles.R
 \name{combine_tiles}
 \alias{combine_tiles}
-\title{Combine predicted tiles into a single raster}
+\title{Combine tiles into a single raster}
 \usage{
-combine_tiles(predicted_tiles, out_file, ...)
+combine_tiles(tiles, out_file, ...)
 }
 \arguments{
-\item{predicted_tiles}{Paths to predicted tiles, usually from
-\code{predict_terra_tiles()}.}
+\item{tiles}{Paths to tiles, possibly from
+\code{predict_terra_tiles()}, or list of \code{SpatRaster} tiles.}
 
 \item{out_file}{Character. Name of the saved file.}
 
@@ -19,5 +19,5 @@ combine_tiles(predicted_tiles, out_file, ...)
 \code{out_file}
 }
 \description{
-Combine predicted tiles into a single raster
+Combine tiles into a single raster
 }

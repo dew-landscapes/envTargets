@@ -8,7 +8,7 @@ summarise_store_data(
   tars = NULL,
   tars_name = "clean",
   prefix = "bio_",
-  excludes = c("path", "dir", "file", "env", "rich"),
+  excludes = c("path", "dir", "file", "env", "rich", "names"),
   extras = c("clean_end"),
   site_cols = c("cell_lat", "cell_long"),
   visit_cols = c("cell_lat", "cell_long", "year"),
