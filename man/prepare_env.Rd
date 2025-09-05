@@ -4,26 +4,19 @@
 \alias{prepare_env}
 \title{Prepare a tibble of environmental layers from settings}
 \usage{
-prepare_env(
-  set_list,
-  reg_exp = "\\\\.tif",
-  base_year = as.numeric(format(Sys.Date(), "\%Y")) - 10,
-  ...
-)
+prepare_env(set_list, reg_exp = "\\\\.tif", ...)
 }
 \arguments{
 \item{set_list}{list. usually from yaml::read_yaml("settings/setup.yaml")}
 
 \item{reg_exp}{Character. Used to limit returned files.}
 
-\item{base_year}{Numeric. Default is
-\code{as.numeric(format(Sys.Date(), "\%Y")) - 10}}
-
 \item{...}{Passed to envRaster::name_env_tif}
 }
 \value{
-tibble
+tibble of raster paths and meta data parsed into columns
 }
 \description{
-Prepare a tibble of environmental layers from settings
+'Seasons' functionality removed 2025-09-05. If seasons are needed, left join
+the result of \code{prepare_env()} to the result of \verb{make_seasons()``$seasons}.
 }
