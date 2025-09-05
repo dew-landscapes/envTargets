@@ -7,7 +7,8 @@
 prepare_env(
   set_list,
   reg_exp = "\\\\.tif",
-  base_year = as.numeric(format(Sys.Date(), "\%Y")) - 10
+  base_year = as.numeric(format(Sys.Date(), "\%Y")) - 10,
+  ...
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ prepare_env(
 
 \item{base_year}{Numeric. Default is
 \code{as.numeric(format(Sys.Date(), "\%Y")) - 10}}
+
+\item{...}{Passed to envRaster::name_env_tif}
 }
 \value{
 tibble
