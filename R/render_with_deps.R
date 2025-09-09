@@ -35,7 +35,7 @@ render_with_deps <- function(input_directory = "."
                              , clean_up = TRUE
                              ) {
 
-  output_dir <- yaml::read_yaml(fs::path(report_dir, "_bookdown.yaml"))$output_dir
+  output_dir <- yaml::read_yaml(fs::path(input_directory, "_bookdown.yaml"))$output_dir
 
   if(is.null(output_dir)) output_dir <- fs::path(input_directory, "_book")
 
