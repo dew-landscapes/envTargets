@@ -20,12 +20,10 @@
 #' knit?
 #' @param clean_out_dir Logical. Delete the book before knit? Useful if chapter
 #' names are changed, leaving orphaned `.html` files in the output directory.
-#' @param default_out_dir If _bookdown.yaml does not specify the `output_dir`,
-#' use this output directory instead.
 #' @param clean_up Logical. Delete intermediary files after knit?
 #'
 #' @return Return value is just the `output_dir` specified in `_bookdown.yaml`,
-#' or, if that is not specified, the value of `default_out_dir`. Files needed
+#' or, if that is not specified, the value of `input_directory`. Files needed
 #' for the book are written into the output directory.
 #'
 #' @author Shir Dekel (modified by nw)
@@ -34,13 +32,12 @@ render_with_deps <- function(input_directory = "."
                              , deps
                              , remove_main = TRUE
                              , clean_out_dir = TRUE
-                             , default_out_dir = "report"
                              , clean_up = TRUE
                              ) {
 
-  output_dir <- yaml::read_yaml("report/_bookdown.yaml")$output_dir
+  output_dir <- yaml::read_yaml(fs::path(report_dir, "_bookdown.yaml"))$output_dir
 
-  if(is.null(output_dir)) output_dir <- default_out_dir
+  if(is.null(output_dir)) output_dir <- fs::path(input_directory, "_book")
 
   if(remove_main) {
 
@@ -50,7 +47,11 @@ render_with_deps <- function(input_directory = "."
 
   if(clean_out_dir) {
 
-    unlink(output_dir)
+    if(dir.exists(output_dir)) {
+
+      fs::dir_delete(output_dir)
+
+    }
 
   }
 

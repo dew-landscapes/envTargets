@@ -9,7 +9,6 @@ render_with_deps(
   deps,
   remove_main = TRUE,
   clean_out_dir = TRUE,
-  default_out_dir = "report",
   clean_up = TRUE
 )
 }
@@ -25,14 +24,11 @@ knit?}
 \item{clean_out_dir}{Logical. Delete the book before knit? Useful if chapter
 names are changed, leaving orphaned \code{.html} files in the output directory.}
 
-\item{default_out_dir}{If _bookdown.yaml does not specify the \code{output_dir},
-use this output directory instead.}
-
 \item{clean_up}{Logical. Delete intermediary files after knit?}
 }
 \value{
 Return value is just the \code{output_dir} specified in \verb{_bookdown.yaml},
-or, if that is not specified, the value of \code{default_out_dir}. Files needed
+or, if that is not specified, the value of \code{input_directory}. Files needed
 for the book are written into the output directory.
 }
 \description{
