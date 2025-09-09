@@ -7,32 +7,46 @@
 render_with_deps(
   input_directory = ".",
   deps,
-  output_directory = NULL,
+  remove_main = TRUE,
+  clean_out_dir = TRUE,
+  default_out_dir = "report",
   clean_up = TRUE
 )
 }
 \arguments{
-\item{input_directory}{Path in which \code{index.Rmd} can be found}
+\item{input_directory}{Path in which \code{index.Rmd} can be found.}
 
-\item{output_directory}{Directory path. Where should the final results be
-saved (this is usually not a targets store).}
+\item{deps}{Any dependencies for the report. Note that these are not made
+available within the knit, they just trigger the target to run.}
 
-\item{clean_up}{Logical. Delete intermediary \emph{and} \code{output_directory} \emph{before}
-knit and delete intermediary files \emph{after} knit.}
+\item{remove_main}{Logical. Delete _main.Rmd froom the input directory before
+knit?}
+
+\item{clean_out_dir}{Logical. Delete the book before knit? Useful if chapter
+names are changed, leaving orphaned \code{.html} files in the output directory.}
+
+\item{default_out_dir}{If _bookdown.yaml does not specify the \code{output_dir},
+use this output directory instead.}
+
+\item{clean_up}{Logical. Delete intermediary files after knit?}
 }
 \value{
-The target is just the path \code{output_directory}. Files needed for the
-book are written into \code{output_directory}.
+Return value is just the \code{output_dir} specified in \verb{_bookdown.yaml},
+or, if that is not specified, the value of \code{default_out_dir}. Files needed
+for the book are written into the output directory.
 }
 \description{
+Moving the report to the targets store relies on output_dir being specified
+in the _bookdown.yaml file, usually written within report_prep.R
+}
+\details{
 Enables a bookdown 'target' within a \href{https://books.ropensci.org/targets/}{targets workflow}.
 I was unable to get \href{https://mps9506.r-universe.dev/bookdowntargets/doc/manual.html}{bookdowntargets}
 to work without error. That may be a better way to achieve this. Currently
 (20250520) \code{deps} still need to be provided inside bookdown scripts (i.e. providing
 \code{deps} to the function simply tells targets when the book needs to be remade,
 it does not make those \code{deps} available inside the knit.)
-}
-\details{
+
 Based on code found here: https://github.com/shirdekel/phd_thesis/commit/cc66e1b9d9305a4b21e8489836545ecc4475f9ee
 }
 \author{
