@@ -76,7 +76,7 @@ list(
   )
 ```
 
-## Raster preparation
+### Raster preparation
 
 Need a `settings/env.yaml` (or similar):
 
@@ -114,7 +114,7 @@ combine section below where `make_env_stack()` is used within
 make_env_stack(env_df, aoi = aoi_sf)
 ```
 
-## Raster split, apply, combine
+### Raster split, apply, combine
 
 Also see the `geotargets` package.
 
