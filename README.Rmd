@@ -1,0 +1,235 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# envTargets
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of envTargets is to assist targets based workflows in `env` projects.
+
+## Installation
+
+You can install the development version of envTargets from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("dew-landscapes/envTargets")
+```
+Load `envTargets`
+
+```{r}
+library("envTargets")
+```
+
+## Example workflows
+
+### Bookdown
+
+Need to create `_bookdown.yaml`...
+
+```{r, eval = FALSE, echo = TRUE}
+
+tar_target(bookdown_yaml
+           , prepare_bookdown_yaml() # an envTargets function
+           , format = "file"
+           )
+
+```
+
+Then a generic `0X0_report.R` script will knit, respecting target dependencies.
+
+```{r, eval = FALSE, echo = TRUE}
+
+library(targets)
+library(tarchetypes)
+
+# tars -------
+tars <- yaml::read_yaml("_targets.yaml")
+
+# tar options --------
+tar_option_set(packages = yaml::read_yaml("settings/packages.yaml")$packages)
+
+# from elsewhere -----
+tar_load(extent, store = tars$report_prep$store)
+
+# targets --------
+list(
+  ## dependencies -------
+  tar_files(file_deps
+            , c(fs::path(tars$clean$store, "objects", "bio_clean")
+                # put any other target dependencies in here
+                , "report/_bookdown.yaml"
+                , get_deps()[[1]]
+                )
+            )
+  ## render --------
+  , tar_target(report
+               , render_with_deps(input_directory = "report"
+                                  , deps = file_deps |> unlist() |> unname()
+                                  )
+               )
+  )
+
+```
+
+## Raster preparation
+
+Need a `settings/env.yaml` (or similar):
+
+```{r, eval = FALSE, echo = TRUE}
+
+env:
+  extent:
+    vector: "sa_br_dissolve"
+    filt_col: NULL
+    filt_level: NULL
+    buffer: 0
+  grain:
+    temp: "P10Y"
+    res: 90
+
+```
+
+To make a tibble of the raster stack:
+
+```{r, eval = FALSE, echo = TRUE}
+
+tar_target(name = env_df
+               , command = prepare_env(settings_env
+                                       , base_year = 2015
+                                       )
+               )
+
+```
+
+To make the actual raster stack (never a target, just feed this in as an argument if/where needed). For example see the
+raster split, apply, combine section below where `make_env_stack()` is used within `predict_terra_tiles()`.
+
+```{r, eval = FALSE, echo = TRUE}
+
+make_env_stack(env_df, aoi = aoi_sf)
+
+```
+
+## Raster split, apply, combine
+
+Also see the `geotargets` package.
+
+`terra_memfrac` and `use_cores` are global objects specified at the top of the targets workflow. They attempt to balance memory use over the cores used (with each tile being sent to a core, where it is processed sequentially). While this seems to work well, it causes target invalidation if the workflow is run with different cores/RAM.
+
+```{r, eval = FALSE, echo = TRUE}
+
+# cores --------
+use_cores <- floor(parallel::detectCores() * 3 / 4)
+
+# RAM -------
+total_terra_ram_prop <- 0.6 # across all cores
+terra_memfrac <- total_terra_ram_prop / use_cores # prop of available memory allowed per core (or per tile)
+
+```
+
+The code below assumes that the rasters are all in place, usually created by `envRas`. `aoi_sf` is an, optional, simple feature to set the raster window (via `terra::window()`).
+
+```{r, eval = FALSE, echo = TRUE}
+### base grid --------
+  , tar_target(base_grid
+             , command = name_env_out(base_dir = "I:"
+                                      , set_list = settings_import$env
+                                      ) |>
+               dplyr::mutate(path = fs::path(path, "base.tif")) |>
+               dplyr::pull(path)
+             , format = "file"
+             )
+#### split --------
+, tar_target(name = tile_extents
+             , make_tile_extents(base_grid_path = base_grid
+                                 , aoi = aoi_sf
+                                 )
+             )
+#### apply -------
+, tar_target(use_memfrac
+             , if(nrow(tile_extents >= use_cores)) {terra_memfrac} else
+               {(total_ram * total_terra_ram_prop / nrow(tile_extents)) / total_ram}
+             )
+, tar_target(predicted_tiles
+             , command = predict_terra_tiles(extent = tile_extents
+                                             , predict_stack = make_env_stack(env_df, aoi_sf)
+                                             , model = rf_good$rf
+                                             , terra_options = list(memfrac = use_memfrac)
+                                             , out_dir = fs::path(tars$predict$store, "tiles")
+                                             , load_packages = c("randomForest")
+                                             # via dots to terra::predict
+                                             , na.rm = TRUE
+                                             , overwrite = TRUE
+                                             , wopt = list(datatype = "INT1U")
+                                             )
+             , pattern = map(tile_extents)
+             , retrieval = "worker"
+             , format = "file"
+             )
+#### combine -------
+, tar_target(prediction_raw
+             , combine_tiles(tiles = predicted_tiles
+                             , out_file = fs::path(tars$predict$store, "ecosystems_raw.tif")
+                             , overwrite = TRUE
+                             , wopt = list(datatype = "INT1U")
+                             )
+             , deployment = "main"
+             , format = "file"
+             )
+
+```
+
+
+## What else is in `envTargets`?
+
+```{r, echo = FALSE, warning = FALSE}
+
+  get_name_title <- function(text) {
+    
+    tibble::enframe(text
+                    , name = NULL
+                    , value = "description"
+                    ) |>
+      dplyr::filter(grepl("title", description)) |>
+      dplyr::mutate(description = gsub("\\\\|title", "", description)
+                    , description = gsub("^\\{|\\}$", "", description)
+                    )
+    
+  }
+
+  manuals <- fs::dir_info("man") |>
+    dplyr::select(path) |>
+    dplyr::filter(grepl("Rd$", path)
+                  , !grepl("pipe", path)
+                  ) |>
+    dplyr::mutate(object = gsub("man\\/|\\.Rd","",path)
+                  , class = purrr::map_chr(object
+                                           , \(x) envFunc::vec_to_sentence(class(get(x)))
+                                           )
+                  , text = purrr::map(path, readLines)
+                  , text = purrr::map(text, get_name_title)
+                  , object = paste0("`envTargets::"
+                                    , object
+                                    , "()`"
+                                    )
+                  ) |>
+    tidyr::unnest(cols = c(text))
+
+  knitr::kable(manuals[,2:4])
+
+```
+
