@@ -42,6 +42,9 @@ If left as \code{NULL}, will use \code{tars_name}.}
 
 \item{use_arrow}{Use \code{arrow::open_dataset()} instead of \code{tar_read_raw} on store objects. Saves memory, but requires targets to be saved as parquets (with no file extension).}
 }
+\value{
+tibble
+}
 \description{
 Summarise a cleaning workflow from a targets store
 }

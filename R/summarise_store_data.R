@@ -16,7 +16,7 @@
 #' @param deps Dependencies that, if updated, should invalidate the output.
 #' @param use_arrow Use `arrow::open_dataset()` instead of `tar_read_raw` on store objects. Saves memory, but requires targets to be saved as parquets (with no file extension).
 #'
-#' @return
+#' @return tibble
 #' @export
 #'
 #' @examples
@@ -54,7 +54,7 @@ summarise_store_data <- function(tars = NULL
     dplyr::filter(grepl(keeps, name)) |>
     dplyr::filter(! grepl(paste0(excludes, collapse = "|"), name)) |>
     dplyr::filter(type == "stem") |>
-    dplyr::select(name, warnings, path) |>
+    dplyr::select(name, warnings, time, path) |>
     tidyr::unnest(cols = c(path)) |>
     dplyr::mutate(obj = purrr::map(name,
                                    \(x) {
@@ -78,7 +78,7 @@ summarise_store_data <- function(tars = NULL
                   , rmd = here::here("report", "child", rmd_dir, paste0(gsub(prefix, "", name), ".Rmd"))
                   ) |>
     tidyr::unnest(cols = c(summary)) |>
-    dplyr::arrange(desc(taxa), desc(records), desc(visits), desc(sites)) |>
+    dplyr::arrange(time) |> # assumes the cleaning process is entirely consecutive
     dplyr::select(! dplyr::where(is.list))
 
 }
