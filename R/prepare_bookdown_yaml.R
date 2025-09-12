@@ -27,7 +27,7 @@ prepare_bookdown_yaml <- function(report_dir = "report"
                                                )
                                , rmd_files = c("index.Rmd"
                                                , fs::dir_ls(path = "report"
-                                                            , regexp = "\\d{4}.*Rmd$"
+                                                            , regexp = "/\\d{4}.*Rmd$"
                                                             ) |>
                                                  gsub("report/", "", x = _) |>
                                                  unname()
