@@ -47,9 +47,11 @@ render_with_deps <- function(input_directory = "."
 
   if(clean_out_dir) {
 
-    if(dir.exists(output_dir)) {
+    if(xfun::in_dir(input_directory, dir.exists(output_dir))) {
 
-      fs::dir_delete(output_dir)
+      xfun::in_dir(input_directory
+                   , fs::dir_delete(output_dir)
+                   )
 
     }
 
@@ -89,6 +91,6 @@ render_with_deps <- function(input_directory = "."
 
   }
 
-  return(output_dir)
+  return(gsub("^\\.\\.\\/", "", output_dir))
 
 }
