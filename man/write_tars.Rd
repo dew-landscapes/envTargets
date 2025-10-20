@@ -4,16 +4,24 @@
 \alias{write_tars}
 \title{Write tars as yaml}
 \usage{
-write_tars(tars)
+write_tars(tars, package_dump = TRUE, package_yaml = "settings/packages.yaml")
 }
 \arguments{
 \item{tars}{Tars list}
+
+\item{package_dump}{Logical. Save package information (from
+\code{sessioninfo::package_info()}) to the store (as .csv).}
+
+\item{package_yaml}{Path to yaml file containing packages to be loaded by
+scripts.}
 }
 \value{
-\code{NULL}. Two \verb{_targets.yaml} files written
+\code{NULL}. Two \verb{_targets.yaml} files written. Optionally,
+\code{package_info.csv} written.
 }
 \description{
 Writes a \code{tars} object to \code{here::here("_targets.yaml")} (i.e. the script
 directory) and \code{fs::path(dirname(tars[[1]]$store), "_targets.yaml")} (i.e.
-the store directory).
+the store directory). Optionally exports a .csv of package versions based on
+packages listed in \code{package_yaml}.
 }
