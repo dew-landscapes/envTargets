@@ -2,18 +2,20 @@
 #'
 #' Checks for the existence of files in relevant taxa's output directories (or reads the 'boundary' target).
 #'
-#' @param sdm_store
+#' @param sdm_store File path to sdm store
 #' @param grain "fine" or "coarse" - which output directory to search
-#' @param find_progress Which files to check for (skipping boundary can )
+#' @param find_progress Which files to check for
+#' @param expected Logical; Count the number of records for each taxa to see if they are expected to produce an SDM (e.g. n records >6). Uses bio_geo_range for data.
 #' @param taxa Optionally check for only specified taxa. If NULL (default), will `tar_read` toi from the setup store.
 #'
-#' @return Tibble with columns 'toi', each of `find_progress`, and 'finished' (which checks for a pred .log file)
+#' @return Tibble with columns 'toi', and logical columns for each of `find_progress`, 'finished' (which checks for a pred .log file), and 'expected' (if TRUE).
 #' @export
 #'
 
 sdm_progress <- function(sdm_store = tars$sdm$store,
                          grain = "fine",
                          find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh"),
+                         expected = FALSE,
                          taxa = NULL) {
 
   if(length(grain) > 1 || !grain %in% c("coarse", "fine")) stop("'grain' must be *one* of 'coarse' or 'fine'")
@@ -62,6 +64,26 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
                                           gsub(paste0("__pred.*"), "\\1", x=_) |>
                                           basename(),
                                         finished = TRUE)
+
+  if(expected == TRUE) {
+
+    min_n <- targets::tar_read_raw(paste0("settings_", grain), store = sdm_store)$min_fold_n
+    min_rel <- if(grain == "fine") 100 else 10000
+
+    files[["expected"]] <- arrow::open_dataset(fs::path(gsub("sdm", "setup", sdm_store), "objects", "bio_geo_range")) |>
+      dplyr::select(taxa, rel_metres_adj, pa, cell_lat, cell_long, year) |>
+      dplyr::distinct() |>
+      dplyr::right_join(toi, by = c("taxa" = "toi")) |>
+      dplyr::filter(rel_metres_adj <= min_rel) |>
+      dplyr::group_by(taxa) |>
+      dplyr::add_count() |>
+      dplyr::distinct(taxa, n) |>
+      dplyr::collect() |>
+      dplyr::mutate(expected = dplyr::case_when(n >= min_n ~TRUE,
+                                                .default = FALSE)) |>
+      dplyr::select('toi' = taxa, expected)
+
+  }
 
   res <- purrr::reduce(files, dplyr::left_join, .init = toi) |>
     dplyr::arrange(toi)

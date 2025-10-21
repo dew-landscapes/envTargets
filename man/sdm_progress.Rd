@@ -8,18 +8,23 @@ sdm_progress(
   sdm_store = tars$sdm$store,
   grain = "fine",
   find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh"),
+  expected = FALSE,
   taxa = NULL
 )
 }
 \arguments{
+\item{sdm_store}{File path to sdm store}
+
 \item{grain}{"fine" or "coarse" - which output directory to search}
 
-\item{find_progress}{Which files to check for (skipping boundary can )}
+\item{find_progress}{Which files to check for}
+
+\item{expected}{Logical; Count the number of records for each taxa to see if they are expected to produce an SDM (e.g. n records >6). Uses bio_geo_range for data.}
 
 \item{taxa}{Optionally check for only specified taxa. If NULL (default), will \code{tar_read} toi from the setup store.}
 }
 \value{
-Tibble with columns 'toi', each of \code{find_progress}, and 'finished' (which checks for a pred .log file)
+Tibble with columns 'toi', and logical columns for each of \code{find_progress}, 'finished' (which checks for a pred .log file), and 'expected' (if TRUE).
 }
 \description{
 Checks for the existence of files in relevant taxa's output directories (or reads the 'boundary' target).
