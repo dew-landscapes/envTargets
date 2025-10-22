@@ -9,6 +9,7 @@ sdm_progress(
   grain = "fine",
   find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh"),
   expected = FALSE,
+  return_log = FALSE,
   taxa = NULL
 )
 }
@@ -20,6 +21,8 @@ sdm_progress(
 \item{find_progress}{Which files to check for}
 
 \item{expected}{Logical; Count the number of records for each taxa to see if they are expected to produce an SDM (e.g. n records >6). Uses bio_geo_range for data.}
+
+\item{return_log}{Logical; Return the pred log file as a list-column}
 
 \item{taxa}{Optionally check for only specified taxa. If NULL (default), will \code{tar_read} toi from the setup store.}
 }

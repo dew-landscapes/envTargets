@@ -6,6 +6,7 @@
 #' @param grain "fine" or "coarse" - which output directory to search
 #' @param find_progress Which files to check for
 #' @param expected Logical; Count the number of records for each taxa to see if they are expected to produce an SDM (e.g. n records >6). Uses bio_geo_range for data.
+#' @param return_log Logical; Return the pred log file as a list-column
 #' @param taxa Optionally check for only specified taxa. If NULL (default), will `tar_read` toi from the setup store.
 #'
 #' @return Tibble with columns 'toi', and logical columns for each of `find_progress`, 'finished' (which checks for a pred .log file), and 'expected' (if TRUE).
@@ -16,6 +17,7 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
                          grain = "fine",
                          find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh"),
                          expected = FALSE,
+                         return_log = FALSE,
                          taxa = NULL) {
 
   if(length(grain) > 1 || !grain %in% c("coarse", "fine")) stop("'grain' must be *one* of 'coarse' or 'fine'")
@@ -58,12 +60,24 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
              }) |>
     purrr::compact()
 
-  files[["finished"]] <- tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                                         pattern = paste0(".*__pred.*\\.log$"),
-                                                         full.names = TRUE) |>
-                                          gsub(paste0("__pred.*"), "\\1", x=_) |>
-                                          basename(),
-                                        finished = TRUE)
+
+  files[["finished"]] <- tibble::tibble(logfile = list.files(pred_dir, recursive = TRUE,
+                                                  pattern = paste0(".*__pred.*\\.log$"),
+                                                  full.names = TRUE)) |>
+    dplyr::rowwise() |>
+    dplyr::mutate(toi = gsub(paste0("__pred.*"), "\\1", logfile) |>
+                    basename(),
+                  log = list(readr::read_lines(logfile)),
+                  finished = TRUE,
+                  abandoned = grepl("abandoned", paste(log, collapse="\n")),
+                  errored = grepl("Error", paste(log, collapse="\n"))) |>
+    dplyr::select(-logfile)
+
+  if(!return_log) {
+    files$finished <- files$finished |>
+      dplyr::select(-log)
+  }
+
 
   if(expected == TRUE) {
 
