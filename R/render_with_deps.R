@@ -75,7 +75,7 @@ render_with_deps <- function(input_directory = "."
 
     if(length(del_files)) {
 
-      fs::file_delete(del_file)
+      fs::file_delete(del_files)
 
     }
 
