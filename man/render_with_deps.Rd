@@ -9,7 +9,8 @@ render_with_deps(
   deps,
   remove_main = TRUE,
   clean_out_dir = TRUE,
-  clean_up = TRUE
+  clean_up = TRUE,
+  ...
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ knit?}
 names are changed, leaving orphaned \code{.html} files in the output directory.}
 
 \item{clean_up}{Logical. Delete intermediary files after knit?}
+
+\item{...}{Arguments to boookdown::render_book, especially for output_format.}
 }
 \value{
 Return value is just the \code{output_dir} specified in \verb{_bookdown.yaml},

@@ -21,6 +21,7 @@
 #' @param clean_out_dir Logical. Delete the book before knit? Useful if chapter
 #' names are changed, leaving orphaned `.html` files in the output directory.
 #' @param clean_up Logical. Delete intermediary files after knit?
+#' @param ... Arguments to boookdown::render_book, especially for output_format.
 #'
 #' @return Return value is just the `output_dir` specified in `_bookdown.yaml`,
 #' or, if that is not specified, the value of `input_directory`. Files needed
@@ -33,6 +34,7 @@ render_with_deps <- function(input_directory = "."
                              , remove_main = TRUE
                              , clean_out_dir = TRUE
                              , clean_up = TRUE
+                             , ...
                              ) {
 
   output_dir <- yaml::read_yaml(fs::path(input_directory, "_bookdown.yaml"))$output_dir
@@ -60,7 +62,7 @@ render_with_deps <- function(input_directory = "."
   xfun::in_dir(input_directory
                , bookdown::render_book(input = "index.Rmd"
                                        , config_file = "_bookdown.yaml"
-                                       )
+                                       , ...)
                )
 
   if(clean_up) {
