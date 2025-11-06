@@ -13,7 +13,7 @@
 prepare_bookdown_yaml <- function(report_dir = "report"
                                   , store = tars$report$store
                                   , output_dir = "compiled_report"
-                                  ) {
+                                  , repo = usethis::git_remotes()$origin) {
 
   out_file <- fs::path(report_dir, "_bookdown.yaml")
 
@@ -32,7 +32,7 @@ prepare_bookdown_yaml <- function(report_dir = "report"
                                                  gsub("report/", "", x = _) |>
                                                  unname()
                                                )
-                               , repo = gsub("\\.git$", "", usethis::git_remotes()$origin)
+                               , repo = repo
                                , output_dir = fs::path(store |>
                                                          gsub("\\.\\.\\/\\.\\."
                                                               , "../../.."

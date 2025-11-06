@@ -7,7 +7,8 @@
 prepare_bookdown_yaml(
   report_dir = "report",
   store = tars$report$store,
-  output_dir = "compiled_report"
+  output_dir = "compiled_report",
+  repo = usethis::git_remotes()$origin
 )
 }
 \arguments{
