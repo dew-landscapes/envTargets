@@ -16,7 +16,7 @@
 #' @examples
 prepare_env <- function(set_list
                         , reg_exp = "\\.tif"
-                        , base_dir = if(Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt", "")
+                        , base_dir = if(Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt/envcube", "")
                         , ...
                         ) {
 
