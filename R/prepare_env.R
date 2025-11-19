@@ -33,6 +33,10 @@ prepare_env <- function(set_list
                             , skips = "base|DEW__SDM"
                             , ...
                             ) |>
+    dplyr::left_join(envRaster::ras_layers |>
+                       dplyr::select(layer, description) |>
+                       dplyr::distinct()
+                     ) |>
     dplyr::mutate(start_date = as.Date(start_date))
 
   if(create_short_desc) {
