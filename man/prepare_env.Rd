@@ -10,6 +10,7 @@ prepare_env(
   base_dir = if (Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt/envcube",
     ""),
   create_short_desc = TRUE,
+  is_static = FALSE,
   ...
 )
 }

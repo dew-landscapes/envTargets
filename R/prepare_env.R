@@ -20,6 +20,7 @@ prepare_env <- function(set_list
                         , reg_exp = "\\.tif"
                         , base_dir = if(Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt/envcube", "")
                         , create_short_desc = TRUE
+                        , is_static = FALSE
                         , ...
                         ) {
 
@@ -34,9 +35,10 @@ prepare_env <- function(set_list
                             , ...
                             ) |>
     dplyr::left_join(envRaster::ras_layers |>
-                       dplyr::select(layer, description) |>
-                       dplyr::distinct()
-                     ) |>
+                       dplyr::distinct(layer, description)
+                     )
+
+  if(! is_static) result <- result |>
     dplyr::mutate(start_date = as.Date(start_date))
 
   if(create_short_desc) {
