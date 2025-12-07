@@ -47,10 +47,9 @@ summarise_store_data <- function(tars = NULL
 
   store <- tars[[tars_name]]$store
 
-  store |>
-    tar_meta(store = _
-             , targets_only = TRUE
-             ) |>
+   targets::tar_meta(store = store
+                      , targets_only = TRUE
+                      ) |>
     dplyr::filter(grepl(keeps, name)) |>
     dplyr::filter(! grepl(paste0(excludes, collapse = "|"), name)) |>
     dplyr::filter(type == "stem") |>
