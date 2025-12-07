@@ -14,7 +14,9 @@
 #' @param rmd_dir What directory is the Rmd associated with each object found?
 #' If left as `NULL`, will use `tars_name`.
 #' @param deps Dependencies that, if updated, should invalidate the output.
-#' @param use_arrow Use `arrow::open_dataset()` instead of `tar_read_raw` on store objects. Saves memory, but requires targets to be saved as parquets (with no file extension).
+#' @param use_arrow Logical. Use `arrow::open_dataset()` instead of
+#' `tar_read_raw` on store objects. Saves memory, but requires targets to be
+#' saved as parquets (with no file extension).
 #'
 #' @return tibble
 #' @export

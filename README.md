@@ -197,14 +197,15 @@ raster window (via `terra::window()`).
 | `envTargets::extract_temporal_grain()` | function | Get the temporal grain from settings |
 | `envTargets::get_deps()` | function | Get dependencies |
 | `envTargets::make_env_stack()` | function | Make a spatRaster from env_df |
+| `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |
 | `envTargets::make_targets()` | function | Make targets |
 | `envTargets::make_tars()` | function | Make tars |
-| `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |
 | `envTargets::make_tile_extents()` | function | Make tile (extents) for raster split, apply, combine |
 | `envTargets::predict_terra_tiles()` | function | Predict a model across tiles |
 | `envTargets::prepare_bookdown_yaml()` | function | Prepare \_bookdown.yaml within a targets workflow |
 | `envTargets::prepare_env()` | function | Prepare a tibble of environmental layers from settings |
 | `envTargets::render_with_deps()` | function | Render bookdown and force Rmd file dependencies |
+| `envTargets::sdm_progress()` | function | Check completion of an envSDMs run |
 | `envTargets::store_dir()` | function | Generate a path to a storage directory |
 | `envTargets::summarise_store_data()` | function | Summarise a cleaning workflow from a targets store |
 | `envTargets::write_tars()` | function | Write tars as yaml |
