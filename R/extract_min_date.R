@@ -15,7 +15,7 @@ extract_min_date <- function(settings
                              , max_year = as.numeric(format(Sys.Date() - 365, "%Y"))
                              ) {
 
-  t_ext <- envFunc::find_name(settings_scale, temporal_extent)
+  t_ext <- envFunc::find_name(settings, temporal_extent)
   min_year <- max_year - readr::parse_number(t_ext)
   paste0(min_year, "-01-01")
 
