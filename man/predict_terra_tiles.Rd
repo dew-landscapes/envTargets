@@ -5,7 +5,7 @@
 \title{Predict a model across tiles}
 \usage{
 predict_terra_tiles(
-  extent,
+  extent_df,
   predict_stack,
   model,
   terra_options = NULL,
@@ -16,7 +16,7 @@ predict_terra_tiles(
 )
 }
 \arguments{
-\item{extent}{Tibble from \code{make_tile_extents()}.}
+\item{extent_df}{Tibble from \code{make_tile_extents()}.}
 
 \item{predict_stack}{SpatRaster, possibly from \code{make_env_stack()}.}
 
