@@ -1,6 +1,6 @@
 #' Predict a model across tiles
 #'
-#' @param extent Tibble from `make_tile_extents()`.
+#' @param extent_df Tibble from `make_tile_extents()`.
 #' @param predict_stack SpatRaster, possibly from `make_env_stack()`.
 #' @param model Model object with a predict method.
 #' @param terra_options List of options to be passed to `terra::terraOptions()`.
@@ -22,7 +22,7 @@
 #' @export
 #'
 #' @examples
-predict_terra_tiles <- function(extent
+predict_terra_tiles <- function(extent_df
                                 , predict_stack
                                 , model
                                 , terra_options = NULL
@@ -40,13 +40,16 @@ predict_terra_tiles <- function(extent
 
   }
 
-  out_file <- fs::path(out_dir
-                       , paste0(extent[1, "tile_name"], ".tif")
-                       )
+  extent_df <- extent_df |>
+    dplyr::mutate(out_file = fs::path(out_dir
+                                      , paste0(tile_name, ".tif")
+                                      )
+                  , done = any(file.exists(out_file), force_new)
+                  )
 
-  if(any(!file.exists(out_file), force_new)) {
+  if(any(sum(extent_df$done > 0), force_new)) {
 
-    fs::dir_create(dirname(out_file))
+    fs::dir_create(dirname(extent_df$out_file[[1]]))
 
     ## terra options -------
     if(!is.null(terra_options)) {
@@ -57,16 +60,22 @@ predict_terra_tiles <- function(extent
 
     }
 
-    terra::window(predict_stack) <- terra::ext(as.numeric(extent[1, 1:4]))
+    purrr::walk(1:nrow(extent_df)
+                , \(x) {
 
-    terra::predict(object = predict_stack
-                   , model = model
-                   , filename = out_file
-                   , ...
-                   )
+                  terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
+
+                  terra::predict(object = predict_stack
+                                 , model = model
+                                 , filename = extent_df$out_file[[x]]
+                                 , ...
+                                 )
+
+                }
+                )
 
   }
 
-  return(out_file)
+  return(extent_df$out_file)
 
 }
