@@ -5,7 +5,9 @@
 #' @param tile_name Character. Prefix for the (file) name of each tile.
 #' @param tile_length Numeric. Number of rows and columns in each tile.
 #' @param tile_size Numeric. Ignored if tile_length is not `NULL`. Tile size in
-#' units of the raster at `base_grid_path`.
+#' units of the raster at `base_grid_path`. e.g. with `tile_size` of `10000`
+#' a projected raster with units of metres will result in tiles of size 10 km by
+#' 10 km.
 #' @param min_tiles Numeric. Ignored if tile_length is not `NULL`. Minimum
 #' number of tiles to return. If `tile_size` returns less than `min_tiles`, then
 #'  `min_tiles` will be used instead of `tile_size`.
