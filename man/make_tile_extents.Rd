@@ -24,7 +24,9 @@ make_tile_extents(
 \item{tile_length}{Numeric. Number of rows and columns in each tile.}
 
 \item{tile_size}{Numeric. Ignored if tile_length is not \code{NULL}. Tile size in
-units of the raster at \code{base_grid_path}.}
+units of the raster at \code{base_grid_path}. e.g. with \code{tile_size} of \code{10000}
+a projected raster with units of metres will result in tiles of size 10 km by
+10 km.}
 
 \item{min_tiles}{Numeric. Ignored if tile_length is not \code{NULL}. Minimum
 number of tiles to return. If \code{tile_size} returns less than \code{min_tiles}, then

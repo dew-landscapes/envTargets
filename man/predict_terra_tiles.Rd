@@ -12,6 +12,7 @@ predict_terra_tiles(
   out_dir,
   force_new = TRUE,
   load_packages = NULL,
+  tile_name = "tile_",
   ...
 )
 }
@@ -32,16 +33,12 @@ be saved.}
 
 \item{load_packages}{Character. Any packages to load before predict.}
 
-\item{...}{Passed to \code{terra::predict()}. Object, model and filename arguments
-are already passed so are not needed here. e.g. \code{na.rm = TRUE};
-\code{overwrite = TRUE}; or \code{wopt = list(datatype = "INT1U")}}
-
 \item{tile_name}{Character. How to name the output files? Default is \code{tile_}
 which leads to \code{tile_0001.tif} etc.}
 
-\item{tile_power}{Numeric. \code{10 ^ tile_power} tiles are allowed for, which
-flows into the leading zeroes in tile names. Default is \code{4}, allowing for
-9999 tiles.}
+\item{...}{Passed to \code{terra::predict()}. Object, model and filename arguments
+are already passed so are not needed here. e.g. \code{na.rm = TRUE};
+\code{overwrite = TRUE}; or \code{wopt = list(datatype = "INT1U")}}
 }
 \value{
 Path to the tile predicted tile. Writes tile into \code{out_dir}.
