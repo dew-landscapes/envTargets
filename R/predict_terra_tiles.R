@@ -11,9 +11,6 @@
 #' @param load_packages Character. Any packages to load before predict.
 #' @param tile_name Character. How to name the output files? Default is `tile_`
 #' which leads to `tile_0001.tif` etc.
-#' @param tile_power Numeric. `10 ^ tile_power` tiles are allowed for, which
-#' flows into the leading zeroes in tile names. Default is `4`, allowing for
-#' 9999 tiles.
 #' @param ... Passed to `terra::predict()`. Object, model and filename arguments
 #' are already passed so are not needed here. e.g. `na.rm = TRUE`;
 #' `overwrite = TRUE`; or `wopt = list(datatype = "INT1U")`
@@ -29,6 +26,7 @@ predict_terra_tiles <- function(extent_df
                                 , out_dir
                                 , force_new = TRUE
                                 , load_packages = NULL
+                                , tile_name = "tile_"
                                 , ...
                                 ) {
 
@@ -47,7 +45,7 @@ predict_terra_tiles <- function(extent_df
                   , done = any(file.exists(out_file), force_new)
                   )
 
-  if(any(sum(extent_df$done > 0), force_new)) {
+  if(sum(extent_df$done) > 0) {
 
     fs::dir_create(dirname(extent_df$out_file[[1]]))
 
