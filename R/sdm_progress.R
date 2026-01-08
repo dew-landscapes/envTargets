@@ -15,7 +15,7 @@
 
 sdm_progress <- function(sdm_store = tars$sdm$store,
                          grain = "fine",
-                         find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh"),
+                         find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh", "reproject"),
                          expected = FALSE,
                          return_log = FALSE,
                          taxa = NULL) {
@@ -37,9 +37,11 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
              \(x) {
 
                if(x == "boundary") {
-                 targets::tar_read(boundary, store = sdm_store) |>
-                   dplyr::select('toi' = taxa, 'boundary' = exists) |>
-                   dplyr::inner_join(toi)
+                 tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
+                                                 pattern = "boundary.parquet",
+                                                 full.names = TRUE) |>
+                                  dirname() |> basename(),
+                                boundary = TRUE)
 
                } else if(x %in% c("prep", "tune", "full_run")) {
                  tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
@@ -48,14 +50,21 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
                                   dirname() |> basename(),
                                 !!rlang::ensym(x) := TRUE)
 
-
                } else if(x %in% c("pred", "thresh")) {
                  tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                                 pattern = paste0(".*__", x, ".*\\.tif$"),
+                                                 pattern = paste0(".*__", x, "__.*\\.tif$"),
                                                  full.names = TRUE) |>
-                                  gsub(paste0("__", x, ".*"), "\\1", x=_) |>
-                                  basename(),
+                                  basename() |>
+                                  gsub(paste0("__", x, ".*"), "\\1", x=_),
                                 !!rlang::ensym(x) := TRUE)
+
+               } else if(x == "reproject") {
+                 tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
+                                                 pattern = ".*__thresh_[0-9]{4}.*\\.tif$",
+                                                 full.names = TRUE) |>
+                                  basename() |>
+                                  gsub("__thresh.*", "\\1", x=_),
+                                reproject = TRUE)
                }
              }) |>
     purrr::compact()

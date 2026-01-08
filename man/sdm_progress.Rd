@@ -7,7 +7,8 @@
 sdm_progress(
   sdm_store = tars$sdm$store,
   grain = "fine",
-  find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh"),
+  find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh",
+    "reproject"),
   expected = FALSE,
   return_log = FALSE,
   taxa = NULL
