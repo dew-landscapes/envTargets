@@ -42,10 +42,13 @@ predict_terra_tiles <- function(extent_df
     dplyr::mutate(out_file = fs::path(out_dir
                                       , paste0(tile_name, ".tif")
                                       )
-                  , done = any(file.exists(out_file), force_new)
+                  # the file is 'to_do' if: it doesn't exist; or 'force_new' is TRUE
+                  , to_do = any(!file.exists(out_file)
+                                , force_new
+                                )
                   )
 
-  if(sum(extent_df$done) > 0) {
+  if(sum(extent_df$to_do) > 0) {
 
     fs::dir_create(dirname(extent_df$out_file[[1]]))
 
