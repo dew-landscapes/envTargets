@@ -51,6 +51,7 @@ prepare_env <- function(set_list
     if(max_date_only) {
 
       result <- result |>
+        dplyr::group_by(source, collection, layer, func) |>
         dplyr::filter(start_date == max(start_date))
 
     }
