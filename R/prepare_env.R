@@ -12,7 +12,7 @@
 #' unique 'name'. Requires columns 'name' and 'func'.
 #' @param is_static Logical. If the `start_date` field is 'static' set this to
 #' TRUE.
-#' @param max_date_only Logical. Only used if `is_static` is TRUE. Filter
+#' @param max_date_only Logical. Only used if `is_static` is FALSE Filter
 #' rows duplicated by `layer` and `func` to the latest `start_date`.
 #' @param ... Passed to envRaster::name_env_tif
 #'
@@ -52,7 +52,8 @@ prepare_env <- function(set_list
 
       result <- result |>
         dplyr::group_by(source, collection, layer, func) |>
-        dplyr::filter(start_date == max(start_date))
+        dplyr::filter(start_date == max(start_date)) |>
+        dplyr::ungroup()
 
     }
 
