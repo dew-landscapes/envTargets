@@ -12,7 +12,6 @@ predict_terra_tiles(
   out_dir,
   force_new = TRUE,
   load_packages = NULL,
-  tile_name = "tile_",
   ...
 )
 }
@@ -29,12 +28,10 @@ e.g. \code{list(memfrac = 0.5)}.}
 \item{out_dir}{Character. Name of directory into which predicted tiles will
 be saved.}
 
-\item{force_new}{Logical. If TRUE, predict tile even if it already exists.}
+\item{force_new}{Logical. If TRUE, predict tile even if it already exists.
+Leave as \code{TRUE} to let targets decide if the tile needs to be rewritten.}
 
 \item{load_packages}{Character. Any packages to load before predict.}
-
-\item{tile_name}{Character. How to name the output files? Default is \code{tile_}
-which leads to \code{tile_0001.tif} etc.}
 
 \item{...}{Passed to \code{terra::predict()}. Object, model and filename arguments
 are already passed so are not needed here. e.g. \code{na.rm = TRUE};
