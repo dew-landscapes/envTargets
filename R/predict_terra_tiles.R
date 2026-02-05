@@ -8,9 +8,8 @@
 #' @param out_dir Character. Name of directory into which predicted tiles will
 #' be saved.
 #' @param force_new Logical. If TRUE, predict tile even if it already exists.
+#' Leave as `TRUE` to let targets decide if the tile needs to be rewritten.
 #' @param load_packages Character. Any packages to load before predict.
-#' @param tile_name Character. How to name the output files? Default is `tile_`
-#' which leads to `tile_0001.tif` etc.
 #' @param ... Passed to `terra::predict()`. Object, model and filename arguments
 #' are already passed so are not needed here. e.g. `na.rm = TRUE`;
 #' `overwrite = TRUE`; or `wopt = list(datatype = "INT1U")`
@@ -26,7 +25,6 @@ predict_terra_tiles <- function(extent_df
                                 , out_dir
                                 , force_new = TRUE
                                 , load_packages = NULL
-                                , tile_name = "tile_"
                                 , ...
                                 ) {
 
