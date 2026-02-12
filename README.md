@@ -158,16 +158,25 @@ To make the default tars:
 #> Warning: There was 1 warning in `dplyr::mutate()`.
 #> ℹ In argument: `order = readr::parse_number(basename(script))`.
 #> Caused by warning:
-#> ! 2 parsing failures.
-#> row col expected     actual
-#>   1  -- a number README.Rmd
-#>   2  -- a number README.md
+#> ! 3 parsing failures.
+#> row col expected      actual
+#>   1  -- a number README.Rmd 
+#>   2  -- a number README.html
+#>   3  -- a number README.md
 #> $READMEmd
 #> $READMEmd$script
 #> [1] "../envTargets/README.Rmd"
 #> 
 #> $READMEmd$store
 #> [1] "../../out/envTargets/aus_imcra_prov_dissolve______0__P100Y/90__90__P1Y__species/READMEmd"
+#> 
+#> 
+#> $README.html
+#> $README.html$script
+#> [1] "../envTargets/README.html"
+#> 
+#> $README.html$store
+#> [1] "../../out/envTargets/aus_imcra_prov_dissolve______0__P100Y/90__90__P1Y__species/README.html"
 #> 
 #> 
 #> $README.md
@@ -413,6 +422,7 @@ raster window (via `terra::window()`).
 | `envTargets::combine_tiles()` | function | Combine tiles into a single raster |
 | `envTargets::extract_min_date()` | function | Extract a minimum date to use in the project, based on the settings |
 | `envTargets::extract_temporal_grain()` | function | Get the temporal grain from settings |
+| `envTargets::find_context_combos()` | function | Find context combinations based on settings |
 | `envTargets::get_deps()` | function | Get dependencies |
 | `envTargets::make_env_stack()` | function | Make a spatRaster from env_df |
 | `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |
@@ -423,6 +433,7 @@ raster window (via `terra::window()`).
 | `envTargets::prepare_bookdown_yaml()` | function | Prepare \_bookdown.yaml within a targets workflow |
 | `envTargets::prepare_env()` | function | Prepare a tibble of environmental layers from settings |
 | `envTargets::render_with_deps()` | function | Render bookdown and force Rmd file dependencies |
+| `envTargets::run_all()` | function | Run all targets stores for multiple settings contexts |
 | `envTargets::sdm_progress()` | function | Check completion of an envSDMs run |
 | `envTargets::store_dir()` | function | Generate a path to a storage directory |
 | `envTargets::summarise_store_data()` | function | Summarise a cleaning workflow from a targets store |

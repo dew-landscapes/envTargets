@@ -135,12 +135,12 @@ find_context_combos <- function(proj = "envRegCont"
 
     if(lev_all_type == "already_run") {
 
-      region_pattern <- paste0(settings[[aoi_setting]]$vector, "__"
+      aoi_pattern <- paste0(settings[[aoi_setting]]$vector, "__"
                                , settings[[aoi_setting]]$filt_col, "__", ".*", "__"
                                , settings[[aoi_setting]]$buffer
       )
 
-      dirs <- fs::dir_info(path = proj_dir, regexp = paste(ext_pattern, grain_pattern, region_pattern, sep = "/")
+      dirs <- fs::dir_info(path = proj_dir, regexp = paste(ext_pattern, grain_pattern, aoi_pattern, sep = "/")
                            , type = "directory", recurse = 2) |>
         dplyr::mutate(path = basename(path)) |>
         dplyr::distinct(path) |>
@@ -157,13 +157,13 @@ find_context_combos <- function(proj = "envRegCont"
 
     } else if(lev_all_type == "all_in_vec") {
 
-      region_sf_file <- fs::path(settings$data_dir, "vector", paste0(settings$region$vector, ".parquet"))
+      aoi_sf_file <- fs::path(settings$data_dir, "vector", paste0(settings[[aoi_setting]]$vector, ".parquet"))
 
-      region_sf <- sfarrow::st_read_parquet(region_sf_file)
+      aoi_sf <- sfarrow::st_read_parquet(aoi_sf_file)
 
-      filt_col <- settings$region$filt_col
+      filt_col <- settings[[aoi_setting]]$filt_col
 
-      lev <- region_sf |>
+      lev <- aoi_sf |>
         dplyr::distinct(!!rlang::ensym(filt_col)) |>
         dplyr::filter(!is.na(!!rlang::ensym(filt_col))) |>
         dplyr::pull()
@@ -185,14 +185,14 @@ find_context_combos <- function(proj = "envRegCont"
 
   if(!is.null(aoi_setting) & !is.null(lev)) {
 
-    settings_region <- list(region = c(yaml::read_yaml("settings/setup.yaml")[[aoi_setting]][1:2]
+    settings_aoi <- list(aoi = c(yaml::read_yaml("settings/setup.yaml")[[aoi_setting]][1:2]
                                        , filt_lev = yaml::read_yaml("settings/setup.yaml")[[aoi_setting]]$filt_lev[1]
                                        , yaml::read_yaml("settings/setup.yaml")[[aoi_setting]][4]
     )
     ) |>
       purrr::set_names(aoi_setting)
 
-    settings_temp <- c(settings_temp, settings_region)
+    settings_temp <- c(settings_temp, settings_aoi)
 
   }
 
