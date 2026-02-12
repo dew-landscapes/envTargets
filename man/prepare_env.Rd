@@ -29,7 +29,7 @@ unique 'name'. Requires columns 'name' and 'func'.}
 \item{is_static}{Logical. If the \code{start_date} field is 'static' set this to
 TRUE.}
 
-\item{max_date_only}{Logical. Only used if \code{is_static} is TRUE. Filter
+\item{max_date_only}{Logical. Only used if \code{is_static} is FALSE Filter
 rows duplicated by \code{layer} and \code{func} to the latest \code{start_date}.}
 
 \item{...}{Passed to envRaster::name_env_tif}

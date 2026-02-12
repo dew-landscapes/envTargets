@@ -1,0 +1,37 @@
+name: "South Australia"
+
+default:
+  extent:
+    vector: "aus_imcra_prov_dissolve"
+    filt_col: NULL
+    filt_level: NULL
+    buffer: 0
+    ext_time: "P100Y" # must be a period of years
+  grain:
+    res_x: 90
+    res_y: 90
+    res_time: "P1Y" # must be either P1M or P1Y (used to set contexts)
+    tax: "species"
+
+# raster data
+env:
+  extent:
+    vector: "sa_br_dissolve"
+    ext_time: NULL
+  grain:
+    temp: "P10Y"
+    tax: NULL
+    res_y: NULL
+
+# clean data
+envCleaned:
+  extent:
+    region_taxa: "sa_br_dissolve"
+  
+# landcover data
+envLC:
+  extent:
+    vector: "sa_br_dissolve"
+    ext_time: "P50Y"
+  grain:
+    tax: NULL

@@ -26,3 +26,5 @@ URL: https://github.com/dew-landscapes/envTargets
 BugReports: https://github.com/dew-landscapes/envTargets/issues
 Remotes:
   github::dew-landscapes/envFunc
+Imports: 
+    envFunc
