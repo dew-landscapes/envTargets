@@ -41,6 +41,7 @@ write_tars <- function(tars
 
     fs::file_copy(scales_yaml
                   , fs::path(store_dir, "scales.yaml")
+                  , overwrite = TRUE
                   )
 
   } else {
