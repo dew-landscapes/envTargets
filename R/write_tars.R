@@ -39,9 +39,9 @@ write_tars <- function(tars
 
   if(file.exists(scales_yaml)) {
 
-    fs::copy(scales_yaml
-             , fs::path(store_dir, "scales.yaml")
-             )
+    fs::file_copy(scales_yaml
+                  , fs::path(store_dir, "scales.yaml")
+                  )
 
   } else {
 
