@@ -4,7 +4,12 @@
 \alias{write_tars}
 \title{Write tars as yaml}
 \usage{
-write_tars(tars, package_dump = TRUE, package_yaml = "settings/packages.yaml")
+write_tars(
+  tars,
+  package_dump = TRUE,
+  package_yaml = "settings/packages.yaml",
+  scales_yaml = "settings/scales.yaml"
+)
 }
 \arguments{
 \item{tars}{Tars list}
@@ -14,14 +19,18 @@ write_tars(tars, package_dump = TRUE, package_yaml = "settings/packages.yaml")
 
 \item{package_yaml}{Path to yaml file containing packages to be loaded by
 scripts.}
+
+\item{scales_yaml}{Path to yaml file containing 'scales' (e.g. extent, grain
+and possibly area-of-interest (aoi)).}
 }
 \value{
-\code{NULL}. Two \verb{_targets.yaml} files written. Optionally,
-\code{package_info.csv} written.
+\code{NULL}. Two \verb{_targets.yaml} and one \code{scales_yaml} files written.
+Optionally, \code{package_info.csv} written.
 }
 \description{
 Writes a \code{tars} object to \code{here::here("_targets.yaml")} (i.e. the script
 directory) and \code{fs::path(dirname(tars[[1]]$store), "_targets.yaml")} (i.e.
-the store directory). Optionally exports a .csv of package versions based on
+the store directory). Write \code{scales.yaml} into the store directory.
+Optionally exports a .csv of package versions based on
 packages listed in \code{package_yaml}.
 }

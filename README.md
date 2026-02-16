@@ -65,9 +65,6 @@ The contents of an example `scales.yaml` are provided below:
 ``` r
 
   yaml::read_yaml("inst/examples/scales.yaml")
-#> $name
-#> [1] "South Australia"
-#> 
 #> $default
 #> $default$extent
 #> $default$extent$vector
@@ -429,6 +426,7 @@ raster window (via `terra::window()`).
 | `envTargets::make_targets()` | function | Make targets |
 | `envTargets::make_tars()` | function | Make tars |
 | `envTargets::make_tile_extents()` | function | Make tile (extents) for raster split, apply, combine |
+| `envTargets::parse_store_metadata()` | function | Parse metadata in the file path of a (env) targets store |
 | `envTargets::predict_terra_tiles()` | function | Predict a model across tiles |
 | `envTargets::prepare_bookdown_yaml()` | function | Prepare \_bookdown.yaml within a targets workflow |
 | `envTargets::prepare_env()` | function | Prepare a tibble of environmental layers from settings |
