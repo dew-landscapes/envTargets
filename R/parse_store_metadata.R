@@ -32,8 +32,10 @@ parse_store_metadata <- function(project = basename(here::here())
 
     stores <- stores |>
       dplyr::select(- scales_exists) |>
-      dplyr::mutate(data = purrr::map(store
-                                      , \(x) envFunc::extract_scale(element = project, scales = fs::path(x, "scales.yaml")) |>
+      dplyr::mutate(data = purrr::map(scales_path
+                                      , \(x) envFunc::extract_scale(element = project
+                                                                    , scales = x
+                                                                    ) |>
                                         envFunc::name_env_out()
                                       )
                     ) |>
