@@ -1,18 +1,18 @@
 #' Find context combinations based on settings
 #'
 #' Finds all context combinations for mulitple ext_time, taxonmic grain, and filt_level values
-#' specified as vectors in a yaml file. Also returns the associated store paths for each combo via envTargets::name_env_out
+#' specified as vectors in a yaml file. Also returns the associated store paths for each combo via envFunc::name_env_out
 #' corresponding to a file in the store, and an indication if it exists.
 #'
 #' @param proj,store Project and store names used to specify the directory path to look for existing stores & files
 #' relating to the context combos.
-#' @param settings list. usually from yaml::read_yaml("settings/setup.yaml").
+#' @param settings List of contexts (or 'scales') usually from yaml::read_yaml("settings/scales.yaml").
 #' Must contain extent, grain & optionally aoi as first list elements, with secondary lists of
 #' vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
 #' res_x, res_y, res_time, taxonomic under grain, and
 #' vector, filt_col, filt_level, buffer under aoi.
 #' @param ext Character vector of temporal extents to vary the `ext_time` setting in `settings$extent`,
-#' e.g. c(P10Y, P20Y, P30Y, P50Y, P100Y). Numbers must be preceded with 'P' and followed by 'Y'.
+#' e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y"). Numbers must be preceded with 'P' and followed by 'Y'.
 #' @param tax_grains Character vector of filter levels to vary the `taxonomic` setting in `settings$grain`,
 #' e.g. c("species", "subspecies").
 #' @param lev Character vector of filter levels to vary the `filt_level` setting in `settings$aoi`.
@@ -36,16 +36,16 @@
 #'
 #' @examples
 #'
-find_context_combos <- function(proj = "envRegCont"
-                                , store = "reg_cont"
-                                , settings
-                                , ext = settings$extent$ext_time # specific extents e.g. c(10, 20, 30, 50, 100) or 'all'
-                                , lev = settings$aoi$filt_lev # specific filt levels or 'all'
-                                , tax_grains = settings$grain$taxonomic # specific taxonomic grains or 'all'
-                                , lev_all_type = "already_run" # or "all_in_vec"
+find_context_combos <- function(proj
+                                , store
+                                , settings = yaml::read_yaml("settings/scales.yaml")$default
+                                , ext = settings$extent$ext_time
+                                , lev = settings$aoi$filt_lev
+                                , tax_grains = settings$grain$taxonomic
+                                , lev_all_type = "all_in_vec"
                                 , stop_if_not_run = TRUE
                                 , aoi_setting = "aoi"
-                                , track_file = "reg_cont_tbl_tidy"
+                                , track_file
 
 ) {
 
@@ -174,20 +174,20 @@ find_context_combos <- function(proj = "envRegCont"
 
   # settings temp ----
   # for updating settings & creating relevant directory paths with envFunc::name_env_out
-  settings_temp <- list(extent = c(yaml::read_yaml("settings/setup.yaml")$extent[1:4]
-                                   , ext_time = yaml::read_yaml("settings/setup.yaml")$extent$ext_time[1]
-                                   , yaml::read_yaml("settings/setup.yaml")$extent[6]
+  settings_temp <- list(extent = c(settings$extent[1:4]
+                                   , ext_time = settings$extent$ext_time[1]
+                                   , settings$extent[6]
   )
-  , grain = c(yaml::read_yaml("settings/setup.yaml")$grain[1:3]
+  , grain = c(settings$grain[1:3]
               , list(taxonomic = "species")
   )
   )
 
   if(!is.null(aoi_setting) & !is.null(lev)) {
 
-    settings_aoi <- list(aoi = c(yaml::read_yaml("settings/setup.yaml")[[aoi_setting]][1:2]
-                                       , filt_lev = yaml::read_yaml("settings/setup.yaml")[[aoi_setting]]$filt_lev[1]
-                                       , yaml::read_yaml("settings/setup.yaml")[[aoi_setting]][4]
+    settings_aoi <- list(aoi = c(settings[[aoi_setting]][1:2]
+                                       , filt_lev = settings[[aoi_setting]]$filt_lev[1]
+                                       , settings[[aoi_setting]][4]
     )
     ) |>
       purrr::set_names(aoi_setting)
