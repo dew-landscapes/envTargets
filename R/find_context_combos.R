@@ -28,6 +28,7 @@
 #' (vector, filt_col, filt_level, buffer), e.g. sometimes referred to as 'region' instead of 'aoi'.
 #' @param track_file Character name of file to use for tracking if a store relating to a context combo has been run.
 #' Usually one of the last files created in the project/store, and or one used downstream.
+#' @param data_dir Path to data directory for sourcing the vector with the filter levels if `lev_all_type` = 'all_in_vec'.
 #'
 #' @return Data frame with ext_time, rank, filt_level, path, exists and combo columns,
 #' with each row representing a combination of the ext_time, taxonomic & filt_level inputs.
@@ -46,6 +47,7 @@ find_context_combos <- function(proj
                                 , stop_if_not_run = TRUE
                                 , aoi_setting = "aoi"
                                 , track_file
+                                , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
 
 ) {
 
@@ -157,7 +159,7 @@ find_context_combos <- function(proj
 
     } else if(lev_all_type == "all_in_vec") {
 
-      aoi_sf_file <- fs::path(settings$data_dir, "vector", paste0(settings[[aoi_setting]]$vector, ".parquet"))
+      aoi_sf_file <- fs::path(data_dir, "vector", paste0(settings[[aoi_setting]]$vector, ".parquet"))
 
       aoi_sf <- sfarrow::st_read_parquet(aoi_sf_file)
 
