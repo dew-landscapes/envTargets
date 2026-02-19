@@ -40,6 +40,7 @@
 #' @param force_new Logical. Force new runs of stores corresponding to the context combos if they exist?
 #' @param run_file Name of file that contains the targets stores and code to create them corresponding to
 #' the current project.
+#' @param data_dir Path to data directory for sourcing the vector with the filter levels if `lev_all_type` = 'all_in_vec'.
 #'
 #' @return Executes the run file for all the combinations of settings specified.
 #'
@@ -65,6 +66,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                     , lev_all_type = "all_in_vec"
                     , force_new = TRUE
                     , run_file = "run.R"
+                    , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
 
 ) {
 
@@ -83,6 +85,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                       , stop_if_not_run = TRUE
                       , aoi_setting = upstream_aoi_setting
                       , track_file = upstream_track_file
+                      , data_dir = data_dir
   )
 
   # find contexts to run ----
@@ -96,6 +99,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                                       , stop_if_not_run = FALSE
                                       , aoi_setting = current_aoi_setting
                                       , track_file = current_track_file
+                                      , data_dir = data_dir
   ) %>%
     {if(!force_new) dplyr::filter(., !exists) else .} %>%
     {if(!"filt_level" %in% names(.)) dplyr::mutate(., filt_level = NA) else .}
