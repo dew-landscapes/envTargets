@@ -22,7 +22,8 @@ run_all(
   upstream_aoi_setting = NULL,
   lev_all_type = "all_in_vec",
   force_new = TRUE,
-  run_file = "run.R"
+  run_file = "run.R",
+  data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
 )
 }
 \arguments{
@@ -78,6 +79,8 @@ i.e. those that are available.}
 
 \item{run_file}{Name of file that contains the targets stores and code to create them corresponding to
 the current project.}
+
+\item{data_dir}{Path to data directory for sourcing the vector with the filter levels if \code{lev_all_type} = 'all_in_vec'.}
 }
 \value{
 Executes the run file for all the combinations of settings specified.

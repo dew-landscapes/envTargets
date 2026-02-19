@@ -14,7 +14,8 @@ find_context_combos(
   lev_all_type = "all_in_vec",
   stop_if_not_run = TRUE,
   aoi_setting = "aoi",
-  track_file
+  track_file,
+  data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ and don't have a \code{track_file} (see below)?}
 
 \item{track_file}{Character name of file to use for tracking if a store relating to a context combo has been run.
 Usually one of the last files created in the project/store, and or one used downstream.}
+
+\item{data_dir}{Path to data directory for sourcing the vector with the filter levels if \code{lev_all_type} = 'all_in_vec'.}
 }
 \value{
 Data frame with ext_time, rank, filt_level, path, exists and combo columns,
