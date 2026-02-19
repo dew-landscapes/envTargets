@@ -5,18 +5,14 @@
 \title{Run all targets stores for multiple settings contexts}
 \usage{
 run_all(
-  settings = yaml::read_yaml("settings/setup.yaml"),
-  run_all = yaml::read_yaml("settings/run_all.yaml"),
+  settings = yaml::read_yaml("settings/scales.yaml"),
+  run_all_combos = yaml::read_yaml("settings/run_all.yaml"),
   current_proj = "envRegCont",
   current_store = "reg_cont",
   upstream_proj = "envRange",
   upstream_store = "grd",
-  current_ext = run_all$ext_time,
-  upstream_ext = current_ext,
-  current_lev = run_all$ext_time,
+  current_lev = run_all_combos$filt_lev,
   upstream_lev = NULL,
-  current_tax_grains = run_all$taxonomic,
-  upstream_tax_grains = current_tax_grains,
   upstream_track_file = "grd_files",
   current_track_file = "reg_cont_tbl_tidy",
   current_aoi_setting = "aoi",
@@ -27,14 +23,14 @@ run_all(
 )
 }
 \arguments{
-\item{settings}{List. usually from yaml::read_yaml("settings/setup.yaml").
+\item{settings}{List of default contexts (or 'scales') usually from yaml::read_yaml("settings/scales.yaml").
 Must contain extent, grain & optionally aoi as first list elements, with secondary lists of
 vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
 res_x, res_y, res_time, taxonomic under grain, and
 vector, filt_col, filt_level, buffer under aoi.}
 
-\item{run_all}{List of specific settings vectors to run all combinations of stores for.
-These are currently limited to ext_time, taxonomic grain & filt_level.}
+\item{run_all_combos}{List of specific settings vectors to vary the default settings with and
+run all combinations of stores for. These are currently limited to ext_time, taxonomic grain & filt_level settings.}
 
 \item{current_proj, current_store}{Current project & store names in which running this function and
 running multiple outputs, e.g. 'envRegCont' & 'reg_cont'. Used for checking if existing \code{track_file}s exist.}
@@ -43,16 +39,10 @@ running multiple outputs, e.g. 'envRegCont' & 'reg_cont'. Used for checking if e
 i.e. the precursor project that contains the combos of settings context directories & the store within them,
 e.g. 'envRange' & 'grd'.}
 
-\item{current_ext, upstream_ext}{Character vectors of current & upstream temporal extents corresponding to
-the 'ext_time' setting in \code{settings$extent}, e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y").
-Often the same for current and upstream. Numbers must be preceded by 'P' and followed by 'D', 'M', or 'Y'.}
-
-\item{current_lev, upstream_lev}{Vectors of current & upstream temporal extents corresponding to
-the 'filt_level' setting in \code{settings$grain}. Use NULL for upstream where the upstream project does not have
-an aoi setting.}
-
-\item{current_tax_grains, upstream_tax_grains}{Character vectors of taxonomic grains for the current & upstream
-projects, e.g. c("species", "subspecies"). Often the same for current and upstream.}
+\item{current_lev, upstream_lev}{Vectors of current & upstream filter levels corresponding to the 'filt_level' setting
+in \code{settings$grain}. Use NULL for upstream where the upstream project does not have an aoi setting.
+Note, ext_time & taxonomic grain levels are always required and derived from \code{run_all_combos}, and
+therefore do not need a specific setting.}
 
 \item{current_track_file, upstream_track_file}{Names of files to use for tracking if a store relating to a context combo has been run.
 Usually one of the last files created in the project/store, and or one used downstream.}

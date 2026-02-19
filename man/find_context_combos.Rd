@@ -5,30 +5,30 @@
 \title{Find context combinations based on settings}
 \usage{
 find_context_combos(
-  proj = "envRegCont",
-  store = "reg_cont",
-  settings,
+  proj,
+  store,
+  settings = yaml::read_yaml("settings/scales.yaml")$default,
   ext = settings$extent$ext_time,
   lev = settings$aoi$filt_lev,
   tax_grains = settings$grain$taxonomic,
-  lev_all_type = "already_run",
+  lev_all_type = "all_in_vec",
   stop_if_not_run = TRUE,
   aoi_setting = "aoi",
-  track_file = "reg_cont_tbl_tidy"
+  track_file
 )
 }
 \arguments{
 \item{proj, store}{Project and store names used to specify the directory path to look for existing stores & files
 relating to the context combos.}
 
-\item{settings}{list. usually from yaml::read_yaml("settings/setup.yaml").
+\item{settings}{List of contexts (or 'scales') usually from yaml::read_yaml("settings/scales.yaml").
 Must contain extent, grain & optionally aoi as first list elements, with secondary lists of
 vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
 res_x, res_y, res_time, taxonomic under grain, and
 vector, filt_col, filt_level, buffer under aoi.}
 
 \item{ext}{Character vector of temporal extents to vary the \code{ext_time} setting in \code{settings$extent},
-e.g. c(P10Y, P20Y, P30Y, P50Y, P100Y). Numbers must be preceded with 'P' and followed by 'Y'.}
+e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y"). Numbers must be preceded with 'P' and followed by 'Y'.}
 
 \item{lev}{Character vector of filter levels to vary the \code{filt_level} setting in \code{settings$aoi}.
 As with \code{ext} & \code{lev}, can be specific levels or 'all' to run all available (see \code{lev_all_type} below for 'all' options).}
@@ -57,6 +57,6 @@ with each row representing a combination of the ext_time, taxonomic & filt_level
 }
 \description{
 Finds all context combinations for mulitple ext_time, taxonmic grain, and filt_level values
-specified as vectors in a yaml file. Also returns the associated store paths for each combo via envTargets::name_env_out
+specified as vectors in a yaml file. Also returns the associated store paths for each combo via envFunc::name_env_out
 corresponding to a file in the store, and an indication if it exists.
 }
