@@ -18,10 +18,20 @@ parse_store_metadata <- function(project = basename(here::here())
                                  , scales_yaml = "scales.yaml"
                                  ) {
 
-  stores <- fs::dir_ls(fs::path(store_base, project)
-                      , recurse = TRUE
-                      , regexp = targets_yaml
-                      ) |>
+  # search down through directories until targets_yaml is found
+  find_file <- function(path = fs::path(store_base, project), find = targets_yaml) {
+    items <- fs::dir_ls(path)
+    match <- items[basename(items) == find]
+
+    if (length(match)) return(match)
+
+    items |>
+      purrr::keep(fs::is_dir) |>
+      purrr::map(\(x) find_file(path = x, find)) |>
+      unlist() |> unname()
+  }
+
+  stores <- find_file() |>
     tibble::enframe(name = NULL, value = "store") |>
     dplyr::mutate(scales_path = fs::path(dirname(store), scales_yaml)
                   , scales_exists = file.exists(scales_path)
