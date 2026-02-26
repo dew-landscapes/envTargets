@@ -30,7 +30,7 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
 
   pred_dir <- fs::path(sdm_store, paste0("sdm_", grain))
   if(!is.null(taxa)) {
-    pred_dir <- fs::dir_ls(pred_dir, regexp = paste(taxa, collapse = "|"))
+    pred_dir <- fs::dir_ls(pred_dir, regexp = paste(stringr::str_escape(taxa), collapse = "|"))
   }
 
   files <- purrr::map(find_progress,
