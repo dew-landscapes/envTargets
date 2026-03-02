@@ -38,9 +38,18 @@ parse_store_metadata <- function(project = basename(here::here())
                   , store = dirname(store)
                   )
 
+  if(sum(!stores$scales_exists)) {
+
+      warning("No ", scales_yaml, " files found in:\n "
+              , paste0(stores$store[!stores$scales_exists], collapse = "\n ")
+              , "\nscales_yaml is needed to parse the metadata"
+      )
+  }
+
   if(sum(stores$scales_exists)) {
 
     stores <- stores |>
+      dplyr::filter(scales_exists) |>
       dplyr::select(- scales_exists) |>
       dplyr::mutate(data = purrr::map(scales_path
                                       , \(x) envFunc::extract_scale(element = project
@@ -54,13 +63,6 @@ parse_store_metadata <- function(project = basename(here::here())
                                   , \(x) gsub("^$", "NULL", x)
                                   )
                     )
-
-  } else {
-
-    warning("No ", scales_yaml, " files found in:\n "
-            , paste0(stores$store, collapse = "\n ")
-            , "\nscales_yaml is needed to parse the metadata"
-            )
 
   }
 
