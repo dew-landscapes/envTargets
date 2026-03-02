@@ -42,6 +42,9 @@
 #' the current project.
 #' @param data_dir Path to data directory for sourcing the vector with the filter levels if `lev_all_type` = 'all_in_vec'.
 #' @param current_store_base,upstream_store_base Base directory for the current and upstream targets stores, e.g. "../../out" or "projects/data".
+#' @param current_region_taxa,upstream_region_taxa Logical. Is there a region taxa setting for the current and
+#' upstream projects? Used to enable searching for track files in stores that have a region taxa setting and
+#' those that don't.
 #'
 #' @return Executes the run file for all the combinations of settings specified.
 #'
@@ -70,6 +73,8 @@ run_all <- function(settings_file = "settings/scales.yaml"
                     , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
                     , current_store_base = fs::path("..", "..", "out")
                     , upstream_store_base = fs::path("..", "..", "out")
+                    , current_region_taxa = TRUE
+                    , upstream_region_taxa = TRUE
 
 ) {
 
@@ -90,6 +95,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                       , aoi_setting = upstream_aoi_setting
                       , track_file = upstream_track_file
                       , data_dir = data_dir
+                      , region_taxa_setting = upstream_region_taxa
   )
 
   # find contexts to run ----
@@ -105,6 +111,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                                       , aoi_setting = current_aoi_setting
                                       , track_file = current_track_file
                                       , data_dir = data_dir
+                                      , region_taxa_setting = current_region_taxa
   ) %>%
     {if(!force_new) dplyr::filter(., !exists) else .} %>%
     {if(!"filt_level" %in% names(.)) dplyr::mutate(., filt_level = NA) else .}

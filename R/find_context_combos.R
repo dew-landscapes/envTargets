@@ -30,6 +30,8 @@
 #' @param track_file Character name of file to use for tracking if a store relating to a context combo has been run.
 #' Usually one of the last files created in the project/store, and or one used downstream.
 #' @param data_dir Path to data directory for sourcing the vector with the filter levels if `lev_all_type` = 'all_in_vec'.
+#' @param region_taxa_setting Logical. Is there a region_taxa setting in the project? Used to enable searching for
+#' track files in stores that have a region taxa setting and those that don't.
 #'
 #' @return Data frame with ext_time, rank, filt_level, path, exists and combo columns,
 #' with each row representing a combination of the ext_time, taxonomic & filt_level inputs.
@@ -50,6 +52,7 @@ find_context_combos <- function(proj
                                 , aoi_setting = "aoi"
                                 , track_file
                                 , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
+                                , region_taxa_setting = TRUE
 
 ) {
 
@@ -95,8 +98,9 @@ find_context_combos <- function(proj
                           , ".+("
                           , paste(ext, collapse = "|")
                           , ").+"
-                          , settings$extent$region_taxa
     )
+
+    if(region_taxa_setting) ext_pattern <- paste0(ext_pattern, settings$extent$region_taxa)
 
   }
 
