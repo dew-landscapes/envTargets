@@ -41,6 +41,7 @@
 #' @param run_file Name of file that contains the targets stores and code to create them corresponding to
 #' the current project.
 #' @param data_dir Path to data directory for sourcing the vector with the filter levels if `lev_all_type` = 'all_in_vec'.
+#' @param current_store_base,upstream_store_base Base directory for the current and upstream targets stores, e.g. "../../out" or "projects/data".
 #'
 #' @return Executes the run file for all the combinations of settings specified.
 #'
@@ -67,6 +68,8 @@ run_all <- function(settings_file = "settings/scales.yaml"
                     , force_new = TRUE
                     , run_file = "run.R"
                     , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
+                    , current_store_base = fs::path("..", "..", "out")
+                    , upstream_store_base = fs::path("..", "..", "out")
 
 ) {
 
@@ -77,6 +80,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
   # check if relevant upstream project stores exist & stops if they don't
   find_context_combos(proj = upstream_proj
                       , store = upstream_store
+                      , store_base = upstream_store_base
                       , settings = if(!is.null(list_name)) settings[[list_name]] else settings
                       , ext = upstream_ext
                       , lev = upstream_lev
@@ -91,6 +95,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
   # find contexts to run ----
   ext_rank_lev <- find_context_combos(proj = current_proj
                                       , store = current_store
+                                      , store_base = current_store_base
                                       , settings = if(!is.null(list_name)) settings[[list_name]] else settings
                                       , ext = run_all_combos$ext_time
                                       , lev = current_lev
