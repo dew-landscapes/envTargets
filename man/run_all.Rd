@@ -23,7 +23,9 @@ run_all(
   lev_all_type = "all_in_vec",
   force_new = TRUE,
   run_file = "run.R",
-  data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
+  data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir,
+  current_store_base = fs::path("..", "..", "out"),
+  upstream_store_base = fs::path("..", "..", "out")
 )
 }
 \arguments{
@@ -81,6 +83,8 @@ i.e. those that are available.}
 the current project.}
 
 \item{data_dir}{Path to data directory for sourcing the vector with the filter levels if \code{lev_all_type} = 'all_in_vec'.}
+
+\item{current_store_base, upstream_store_base}{Base directory for the current and upstream targets stores, e.g. "../../out" or "projects/data".}
 }
 \value{
 Executes the run file for all the combinations of settings specified.

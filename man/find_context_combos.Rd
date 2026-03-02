@@ -7,6 +7,7 @@
 find_context_combos(
   proj,
   store,
+  store_base = fs::path("..", "..", "out"),
   settings = yaml::read_yaml("settings/scales.yaml")$default,
   ext = settings$extent$ext_time,
   lev = settings$aoi$filt_lev,
@@ -21,6 +22,8 @@ find_context_combos(
 \arguments{
 \item{proj, store}{Project and store names used to specify the directory path to look for existing stores & files
 relating to the context combos.}
+
+\item{store_base}{Base directory of the targets store, e.g. "../../out" or "/projects/data".}
 
 \item{settings}{List of contexts (or 'scales') usually from yaml::read_yaml("settings/scales.yaml").
 Must contain extent, grain & optionally aoi as first list elements, with secondary lists of
