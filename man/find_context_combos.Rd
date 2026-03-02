@@ -17,7 +17,8 @@ find_context_combos(
   aoi_setting = "aoi",
   track_file,
   data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir,
-  region_taxa_setting = TRUE
+  region_taxa_setting = TRUE,
+  grain = TRUE
 )
 }
 \arguments{

@@ -27,7 +27,9 @@ run_all(
   current_store_base = fs::path("..", "..", "out"),
   upstream_store_base = fs::path("..", "..", "out"),
   current_region_taxa = TRUE,
-  upstream_region_taxa = TRUE
+  upstream_region_taxa = TRUE,
+  upstream_grain = TRUE,
+  current_grain = TRUE
 )
 }
 \arguments{
