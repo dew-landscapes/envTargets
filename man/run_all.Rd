@@ -25,7 +25,9 @@ run_all(
   run_file = "run.R",
   data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir,
   current_store_base = fs::path("..", "..", "out"),
-  upstream_store_base = fs::path("..", "..", "out")
+  upstream_store_base = fs::path("..", "..", "out"),
+  current_region_taxa = TRUE,
+  upstream_region_taxa = TRUE
 )
 }
 \arguments{
@@ -85,6 +87,10 @@ the current project.}
 \item{data_dir}{Path to data directory for sourcing the vector with the filter levels if \code{lev_all_type} = 'all_in_vec'.}
 
 \item{current_store_base, upstream_store_base}{Base directory for the current and upstream targets stores, e.g. "../../out" or "projects/data".}
+
+\item{current_region_taxa, upstream_region_taxa}{Logical. Is there a region taxa setting for the current and
+upstream projects? Used to enable searching for track files in stores that have a region taxa setting and
+those that don't.}
 }
 \value{
 Executes the run file for all the combinations of settings specified.
