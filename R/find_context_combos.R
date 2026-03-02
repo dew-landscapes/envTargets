@@ -53,6 +53,7 @@ find_context_combos <- function(proj
                                 , track_file
                                 , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
                                 , region_taxa_setting = TRUE
+                                , grain = TRUE
 
 ) {
 
@@ -105,7 +106,7 @@ find_context_combos <- function(proj
   }
 
   ## taxonomic ----
-  if(any(tax_grains == "all")|any(is.null(tax_grains))) {
+  if(any(tax_grains == "all")) {
 
     grain_pattern <- paste0(settings$grain$res_x, "__"
                             , settings$grain$res_y, "__"
@@ -126,6 +127,14 @@ find_context_combos <- function(proj
       )
       )
 
+  } else if(any(is.null(tax_grains))) {
+
+    grain_pattern <- paste0(settings$grain$res_x, "__"
+                            , settings$grain$res_y, "__"
+                            , settings$grain$res_time, "__"
+                            , ".+"
+    )
+
   } else {
 
     grain_pattern <- paste0(settings$grain$res_x, "__"
@@ -144,8 +153,8 @@ find_context_combos <- function(proj
     if(lev_all_type == "already_run") {
 
       aoi_pattern <- paste0(settings[[aoi_setting]]$vector, "__"
-                               , settings[[aoi_setting]]$filt_col, "__", ".*", "__"
-                               , settings[[aoi_setting]]$buffer
+                            , settings[[aoi_setting]]$filt_col, "__", ".*", "__"
+                            , settings[[aoi_setting]]$buffer
       )
 
       dirs <- fs::dir_info(path = proj_dir, regexp = paste(ext_pattern, grain_pattern, aoi_pattern, sep = "/")
@@ -182,20 +191,37 @@ find_context_combos <- function(proj
 
   # settings temp ----
   # for updating settings & creating relevant directory paths with envFunc::name_env_out
-  settings_temp <- list(extent = c(settings$extent[1:4]
-                                   , ext_time = settings$extent$ext_time[1]
-                                   , settings$extent[6]
-  )
-  , grain = c(settings$grain[1:3]
-              , list(taxonomic = "species")
-  )
-  )
+  if(region_taxa_setting) {
+
+    settings_temp <- list(extent = c(settings$extent[1:4]
+                                     , ext_time = settings$extent$ext_time[1]
+                                     , settings$extent[6]
+    )
+    )
+
+  } else {
+
+    settings_temp <- list(extent = c(settings$extent[1:4]
+                                     , ext_time = settings$extent$ext_time[1]
+    )
+    )
+
+  }
+
+
+  if(grain) {
+
+    settings_temp$grain <- c(settings$grain[1:3]
+                             , list(taxonomic = "species")
+    )
+
+  }
 
   if(!is.null(aoi_setting) & !is.null(lev)) {
 
     settings_aoi <- list(aoi = c(settings[[aoi_setting]][1:2]
-                                       , filt_lev = settings[[aoi_setting]]$filt_lev[1]
-                                       , settings[[aoi_setting]][4]
+                                 , filt_lev = settings[[aoi_setting]]$filt_lev[1]
+                                 , settings[[aoi_setting]][4]
     )
     ) |>
       purrr::set_names(aoi_setting)
@@ -212,6 +238,15 @@ find_context_combos <- function(proj
                           , stringsAsFactors = FALSE
     )
 
+  } else if(!grain) {
+
+    combos <- expand.grid(ext_time = ext
+                          , stringsAsFactors = FALSE
+    ) |>
+      dplyr::mutate(taxonomic = NA
+                    , filt_lev = NA
+      )
+
   } else {
 
     combos <- expand.grid(ext_time = ext, taxonomic = tax_grains
@@ -227,7 +262,7 @@ find_context_combos <- function(proj
 
       settings_temp$extent$ext_time <- ext_time
 
-      settings_temp$grain$taxonomic <- taxonomic
+      if(!is.na(taxonomic) & grain) settings_temp$grain$taxonomic <- taxonomic
 
       if(!is.na(filt_lev) & !is.null(aoi_setting)) settings_temp[[aoi_setting]]$filt_lev <- filt_lev
 
@@ -235,9 +270,7 @@ find_context_combos <- function(proj
                                                      # , base_dir = fs::path(envFunc::get_env_dir(fs::path("..", "..", "envRegCont")
                                                      #                                            , linux_default = "/projects")
                                                      #                       )
-                                                     , base_dir = fs::path(envFunc::get_env_dir(fs::path("dev", "out", proj)
-                                                                                                , linux_default = "/projects")
-                                                     )
+                                                     , base_dir = proj_dir
                                                      , dir_with_context = TRUE
       )$path %>%
         gsub("\\-\\-", "_", .)
@@ -248,8 +281,8 @@ find_context_combos <- function(proj
                       , rank = taxonomic
         ) %>%
         {if(!is.na(filt_lev) & !is.null(aoi_setting)) dplyr::mutate(., filt_level = filt_lev
-                                                                       , aoi = settings[[aoi_setting]]$vector
-                                                                       , filt_col = settings[[aoi_setting]]$filt_col
+                                                                    , aoi = settings[[aoi_setting]]$vector
+                                                                    , filt_col = settings[[aoi_setting]]$filt_col
         ) else .}
 
     }

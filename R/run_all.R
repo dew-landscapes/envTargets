@@ -75,6 +75,8 @@ run_all <- function(settings_file = "settings/scales.yaml"
                     , upstream_store_base = fs::path("..", "..", "out")
                     , current_region_taxa = TRUE
                     , upstream_region_taxa = TRUE
+                    , upstream_grain = TRUE
+                    , current_grain = TRUE
 
 ) {
 
@@ -96,6 +98,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                       , track_file = upstream_track_file
                       , data_dir = data_dir
                       , region_taxa_setting = upstream_region_taxa
+                      , grain = upstream_grain
   )
 
   # find contexts to run ----
@@ -112,6 +115,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                                       , track_file = current_track_file
                                       , data_dir = data_dir
                                       , region_taxa_setting = current_region_taxa
+                                      , grain = current_grain
   ) %>%
     {if(!force_new) dplyr::filter(., !exists) else .} %>%
     {if(!"filt_level" %in% names(.)) dplyr::mutate(., filt_level = NA) else .}
