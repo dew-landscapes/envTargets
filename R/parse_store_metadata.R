@@ -1,8 +1,8 @@
 #' Parse metadata in the file path of a (env) targets store
 #'
-#' @param project Character. Project name. e.g. basename(here::here()) from
+#' @param project Character. One or more project names. e.g. basename(here::here()) from
 #' inside, say, an RStudio project.
-#' @param store_base Character. Path to the level above the project store.
+#' @param store_base Character. Path to the level above the project store (e.g. an "out" folder).
 #' @param targets_yaml Character. Name of the `_targets.yaml` file(s) to search
 #' for within the `store_base`
 #' @param scales_yaml Character. Name of the `scales.yaml` file(s) to search
@@ -31,12 +31,20 @@ parse_store_metadata <- function(project = basename(here::here())
       unlist() |> unname()
   }
 
-  stores <- find_file() |>
-    tibble::enframe(name = NULL, value = "store") |>
+  stores <- purrr::set_names(project) |>
+    purrr::map(\(x)
+               find_file(path = fs::path(store_base, x)) |>
+                 tibble::enframe(name = NULL, value = "store")
+    ) |>
+    tibble::enframe(name = "project") |>
+    tidyr::unnest(value) |>
     dplyr::mutate(scales_path = fs::path(dirname(store), scales_yaml)
                   , scales_exists = file.exists(scales_path)
                   , store = dirname(store)
-                  )
+    )
+
+  if(length(project) == 1) stores <- stores |>
+    dplyr::select(-project)
 
   if(sum(!stores$scales_exists)) {
 
@@ -52,7 +60,7 @@ parse_store_metadata <- function(project = basename(here::here())
       dplyr::filter(scales_exists) |>
       dplyr::select(- scales_exists) |>
       dplyr::mutate(data = purrr::map(scales_path
-                                      , \(x) envFunc::extract_scale(element = project
+                                      , \(x) envFunc::extract_scale(element = 1
                                                                     , scales = x
                                                                     ) |>
                                         envFunc::name_env_out()

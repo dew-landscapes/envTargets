@@ -12,10 +12,10 @@ parse_store_metadata(
 )
 }
 \arguments{
-\item{project}{Character. Project name. e.g. basename(here::here()) from
+\item{project}{Character. One or more project names. e.g. basename(here::here()) from
 inside, say, an RStudio project.}
 
-\item{store_base}{Character. Path to the level above the project store.}
+\item{store_base}{Character. Path to the level above the project store (e.g. an "out" folder).}
 
 \item{targets_yaml}{Character. Name of the \verb{_targets.yaml} file(s) to search
 for within the \code{store_base}}
