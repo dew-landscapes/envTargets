@@ -5,7 +5,6 @@
 #' the result of `prepare_env()` to the result of `make_seasons()``$seasons`.
 #'
 #' @param set_list list. usually from yaml::read_yaml("settings/setup.yaml")
-#' @param reg_exp Character. Used to limit returned files.
 #' @param base_dir Character. Passed to `base_dir` argument of
 #' `envFunc::name_env_out()`
 #' @param create_short_desc Logical. Create a short description to use as a
@@ -21,7 +20,6 @@
 #'
 #' @examples
 prepare_env <- function(set_list
-                        , reg_exp = "\\.tif"
                         , base_dir = if(Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt/envcube", "")
                         , create_short_desc = TRUE
                         , is_static = FALSE
@@ -31,7 +29,6 @@ prepare_env <- function(set_list
 
   result <- envFunc::name_env_out(set_list
                         , base_dir = base_dir
-                        , reg_exp = reg_exp
                         , all_files = FALSE
                         ) |>
     dplyr::pull(path) |>
