@@ -48,7 +48,7 @@ parse_store_metadata <- function(project = basename(here::here())
       dplyr::filter(scales_exists) |>
       dplyr::select(- scales_exists) |>
       dplyr::mutate(data = purrr::map(scales_path
-                                      , \(x) envFunc::extract_scale(element = 1
+                                      , \(x) envFunc::extract_scale(element = project
                                                                     , scales = x
                                                                     ) |>
                                         envFunc::name_env_out(dir_with_context = TRUE)
