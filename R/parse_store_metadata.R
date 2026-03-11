@@ -7,6 +7,7 @@
 #' for within the `store_base`
 #' @param scales_yaml Character. Name of the `scales.yaml` file(s) to search
 #' for within the `store_base`
+#' @param recurse_depth Numeric. Passed to the recurse argument of `fs::dir_ls()`
 #'
 #' @returns Tibble of parsed metadata
 #' @export
@@ -16,40 +17,27 @@ parse_store_metadata <- function(project = basename(here::here())
                                  , store_base = "../../out"
                                  , targets_yaml = "_targets.yaml"
                                  , scales_yaml = "scales.yaml"
+                                 , recurse_depth = 3
                                  ) {
-
-  # search down through directories until targets_yaml is found
-  find_file <- function(path = fs::path(store_base, project), find = targets_yaml) {
-    items <- fs::dir_ls(path)
-    match <- items[basename(items) == find]
-
-    if (length(match)) return(match)
-
-    items |>
-      purrr::keep(fs::is_dir) |>
-      purrr::map(\(x) find_file(path = x, find)) |>
-      unlist() |> unname()
-  }
 
   stores <- purrr::set_names(project) |>
     purrr::map(\(x)
-               find_file(path = fs::path(store_base, x)) |>
-                 tibble::enframe(name = NULL, value = "store")
-    ) |>
+               find_file(path = fs::path(store_base, x)
+                         , recurse_depth = recurse_depth
+                         ) |>
+                 tibble::enframe(name = NULL, value = "targets_path")
+               ) |>
     tibble::enframe(name = "project") |>
     tidyr::unnest(value) |>
-    dplyr::mutate(scales_path = fs::path(dirname(store), scales_yaml)
+    dplyr::mutate(scales_path = fs::path(dirname(targets_path), scales_yaml)
                   , scales_exists = file.exists(scales_path)
-                  , store = dirname(store)
-    )
-
-  if(length(project) == 1) stores <- stores |>
-    dplyr::select(-project)
+                  , stores = dirname(targets_path)
+                  )
 
   if(sum(!stores$scales_exists)) {
 
       warning("No ", scales_yaml, " files found in:\n "
-              , paste0(stores$store[!stores$scales_exists], collapse = "\n ")
+              , paste0(stores$stores[!stores$scales_exists], collapse = "\n ")
               , "\nscales_yaml is needed to parse the metadata"
       )
   }
@@ -63,7 +51,7 @@ parse_store_metadata <- function(project = basename(here::here())
                                       , \(x) envFunc::extract_scale(element = 1
                                                                     , scales = x
                                                                     ) |>
-                                        envFunc::name_env_out()
+                                        envFunc::name_env_out(dir_with_context = TRUE)
                                       )
                     ) |>
       tidyr::unnest(cols = c(data)) |>
