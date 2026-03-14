@@ -15,23 +15,13 @@ find_file <- function(path = "../../out"
                       , recurse_depth = 4
                       ) {
 
-  match <- character(0)
-  depth <- 0
+  items <- fs::dir_ls(path
+                      , recurse = recurse_depth
+                      , regex = paste0(find, "$")
+                      )
 
-  while(all(length(match) == 0, depth <= recurse_depth)) {
+  if(length(items) == 0) warning("No matches to ", find, " in ", path, " with recurse_depth of ", recurse_depth)
 
-    depth <- depth + 1
-
-    items <- fs::dir_ls(path
-                        , recurse = depth
-                        )
-
-    match <- items[basename(items) == find]
-
-  }
-
-  if(length(match) == 0) warning("No matches to ", find, " in ", path, " with recurse_depth of ", recurse_depth)
-
-  return(match)
+  return(items)
 
 }
