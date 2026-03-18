@@ -1,6 +1,6 @@
 #' Find context combinations based on settings
 #'
-#' Finds all context combinations for mulitple ext_time, taxonmic grain, and filt_level values
+#' Finds all context combinations for mulitple extent_time, taxonmic grain, and filt_level values
 #' specified as vectors in a yaml file. Also returns the associated store paths for each combo via envFunc::name_env_out
 #' corresponding to a file in the store, and an indication if it exists.
 #'
@@ -9,10 +9,10 @@
 #' @param store_base Base directory of the targets store, e.g. "../../out" or "/projects/data".
 #' @param settings List of contexts (or 'scales') usually from yaml::read_yaml("settings/scales.yaml").
 #' Must contain extent, grain & optionally aoi as first list elements, with secondary lists of
-#' vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
+#' vector, filt_col, filt_level, buffer, extent_time, region_taxa under extent,
 #' res_x, res_y, res_time, taxonomic under grain, and
 #' vector, filt_col, filt_level, buffer under aoi.
-#' @param ext Character vector of temporal extents to vary the `ext_time` setting in `settings$extent`,
+#' @param ext Character vector of temporal extents to vary the `extent_time` setting in `settings$extent`,
 #' e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y"). Numbers must be preceded with 'P' and followed by 'Y'.
 #' @param tax_grains Character vector of filter levels to vary the `taxonomic` setting in `settings$grain`,
 #' e.g. c("species", "subspecies").
@@ -33,8 +33,8 @@
 #' @param region_taxa_setting Logical. Is there a region_taxa setting in the project? Used to enable searching for
 #' track files in stores that have a region taxa setting and those that don't.
 #'
-#' @return Data frame with ext_time, rank, filt_level, path, exists and combo columns,
-#' with each row representing a combination of the ext_time, taxonomic & filt_level inputs.
+#' @return Data frame with extent_time, rank, filt_level, path, exists and combo columns,
+#' with each row representing a combination of the extent_time, taxonomic & filt_level inputs.
 #'
 #' @export
 #'
@@ -44,7 +44,7 @@ find_context_combos <- function(proj
                                 , store
                                 , store_base = fs::path("..", "..", "out")
                                 , settings = yaml::read_yaml("settings/scales.yaml")$default
-                                , ext = settings$extent$ext_time
+                                , ext = settings$extent$extent_time
                                 , lev = settings$aoi$filt_lev
                                 , tax_grains = settings$grain$taxonomic
                                 , lev_all_type = "all_in_vec"
@@ -62,7 +62,7 @@ find_context_combos <- function(proj
   proj_dir <- fs::path(store_base, proj)
 
   # find all ----
-  ## ext_time ----
+  ## extent_time ----
   if(any(ext == "all")|any(is.null(ext))) {
 
     ext_pattern <- paste0(settings$extent$vector, "__"
@@ -194,7 +194,7 @@ find_context_combos <- function(proj
   if(region_taxa_setting) {
 
     settings_temp <- list(extent = c(settings$extent[1:4]
-                                     , ext_time = settings$extent$ext_time[1]
+                                     , extent_time = settings$extent$extent_time[1]
                                      , settings$extent[6]
     )
     )
@@ -202,7 +202,7 @@ find_context_combos <- function(proj
   } else {
 
     settings_temp <- list(extent = c(settings$extent[1:4]
-                                     , ext_time = settings$extent$ext_time[1]
+                                     , extent_time = settings$extent$extent_time[1]
     )
     )
 
@@ -231,16 +231,16 @@ find_context_combos <- function(proj
   }
 
   # combos ----
-  # all possible combos of ext_time, filt_lev & taxonomic values
+  # all possible combos of extent_time, filt_lev & taxonomic values
   if(!is.null(lev)) {
 
-    combos <- expand.grid(ext_time = ext, filt_lev = lev, taxonomic = tax_grains
+    combos <- expand.grid(extent_time = ext, filt_lev = lev, taxonomic = tax_grains
                           , stringsAsFactors = FALSE
     )
 
   } else if(!grain) {
 
-    combos <- expand.grid(ext_time = ext
+    combos <- expand.grid(extent_time = ext
                           , stringsAsFactors = FALSE
     ) |>
       dplyr::mutate(taxonomic = NA
@@ -249,7 +249,7 @@ find_context_combos <- function(proj
 
   } else {
 
-    combos <- expand.grid(ext_time = ext, taxonomic = tax_grains
+    combos <- expand.grid(extent_time = ext, taxonomic = tax_grains
                           , stringsAsFactors = FALSE
     ) |>
       dplyr::mutate(filt_lev = NA)
@@ -258,9 +258,9 @@ find_context_combos <- function(proj
 
   # paths df ----
   paths_df <- combos |>
-    purrr::pmap(\(ext_time, filt_lev, taxonomic) {
+    purrr::pmap(\(extent_time, filt_lev, taxonomic) {
 
-      settings_temp$extent$ext_time <- ext_time
+      settings_temp$extent$extent_time <- extent_time
 
       if(!is.na(taxonomic) & grain) settings_temp$grain$taxonomic <- taxonomic
 
@@ -277,7 +277,7 @@ find_context_combos <- function(proj
 
       fs::path(settings_temp$out_dir, store, "objects", track_file) |>
         tibble::as_tibble_col(column_name = "path") |>
-        dplyr::mutate(ext_time = ext_time
+        dplyr::mutate(extent_time = extent_time
                       , rank = taxonomic
         ) %>%
         {if(!is.na(filt_lev) & !is.null(aoi_setting)) dplyr::mutate(., filt_level = filt_lev
@@ -289,9 +289,9 @@ find_context_combos <- function(proj
     ) |>
     dplyr::bind_rows() |>
     dplyr::mutate(exists = purrr::map_lgl(path, \(x) fs::file_exists(x))) |>
-    dplyr::distinct(across(tidyr::any_of(c("ext_time", "rank", "aoi", "filt_col", "filt_level", "path", "exists")))) %>%
-    {if("filt_level" %in% names(.)) dplyr::mutate(., combo = paste(ext_time, rank, filt_level, sep = ", ")) else dplyr::mutate(., combo = paste(ext_time, rank, sep = ", "))} %>%
-    {if("aoi" %in% names(.)) dplyr::arrange(., ext_time, rank, aoi, filt_col, filt_level) else dplyr::arrange(., ext_time, rank)} %>%
+    dplyr::distinct(across(tidyr::any_of(c("extent_time", "rank", "aoi", "filt_col", "filt_level", "path", "exists")))) %>%
+    {if("filt_level" %in% names(.)) dplyr::mutate(., combo = paste(extent_time, rank, filt_level, sep = ", ")) else dplyr::mutate(., combo = paste(extent_time, rank, sep = ", "))} %>%
+    {if("aoi" %in% names(.)) dplyr::arrange(., extent_time, rank, aoi, filt_col, filt_level) else dplyr::arrange(., extent_time, rank)} %>%
     {if(!is.null(aoi_setting) & !is.null(lev)) dplyr::rename(., aoi_setting = aoi) else .}
 
   # not run ----

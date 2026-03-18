@@ -3,23 +3,23 @@
 #' @param settings_file File path of yaml file containing a list of default contexts (or 'scales') usually from
 #' "settings/scales.yaml".
 #' The contexts list must contain extent, grain & optionally aoi as first list elements, with secondary lists of
-#' vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
+#' vector, filt_col, filt_level, buffer, extent_time, region_taxa under extent,
 #' res_x, res_y, res_time, taxonomic under grain, and
 #' vector, filt_col, filt_level, buffer under aoi.
 #' @param list_name Name of the list in the settings file that contains the list of relevant contexts if it is
 #' contained within another list. Use NULL if the extent, grain and aoi elements are primary and
 #' not contained in another list.
 #' @param run_all_combos List of specific settings vectors to vary the default settings with and
-#' run all combinations of stores for. These are currently limited to ext_time, taxonomic grain & filt_level settings.
+#' run all combinations of stores for. These are currently limited to extent_time, taxonomic grain & filt_level settings.
 #' @param current_proj,current_store Current project & store names in which running this function and
 #' running multiple outputs, e.g. 'envRegCont' & 'reg_cont'. Used for checking if existing `track_file`s exist.
 #' @param upstream_proj,upstream_store Upstream project & store names required for the current project,
 #' i.e. the precursor project that contains the combos of settings context directories & the store within them,
 #' e.g. 'envRange' & 'grd'.
 #' @param upstream_ext Character vector of upstream temporal extents corresponding to
-#' the 'ext_time' setting in `settings$extent`, e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y").
+#' the 'extent_time' setting in `settings$extent`, e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y").
 #' Often the same for current and upstream, and usually sourced from run_all_combos.
-#' Only needed if different to current project ext_time specified in `run_all_combos`.
+#' Only needed if different to current project extent_time specified in `run_all_combos`.
 #' Numbers must be preceded by 'P' and followed by 'D', 'M', or 'Y'.
 #' @param upstream_tax_grains Character vector of taxonomic grains for the current & upstream
 #' projects, e.g. c("species", "subspecies"). Often the same for current and upstream, and
@@ -59,7 +59,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                     , current_store = "reg_cont"
                     , upstream_proj = "envRange"
                     , upstream_store = "grd"
-                    , upstream_ext = run_all_combos$ext_time
+                    , upstream_ext = run_all_combos$extent_time
                     , upstream_tax_grains = run_all_combos$taxonomic
                     , current_lev = run_all_combos$filt_lev
                     , upstream_lev = NULL
@@ -106,7 +106,7 @@ run_all <- function(settings_file = "settings/scales.yaml"
                                       , store = current_store
                                       , store_base = current_store_base
                                       , settings = if(!is.null(list_name)) settings[[list_name]] else settings
-                                      , ext = run_all_combos$ext_time
+                                      , ext = run_all_combos$extent_time
                                       , lev = current_lev
                                       , tax_grains = run_all_combos$taxonomic
                                       , lev_all_type = lev_all_type
@@ -124,13 +124,13 @@ run_all <- function(settings_file = "settings/scales.yaml"
 
   if(force_new|nrow(ext_rank_lev)) {
 
-    purrr::pwalk(list(ext_rank_lev$ext_time
+    purrr::pwalk(list(ext_rank_lev$extent_time
                       , ext_rank_lev$rank
                       , ext_rank_lev$filt_level
     )
     , \(x, y, z) {
 
-      settings[[list_name]]$extent$ext_time <- x
+      settings[[list_name]]$extent$extent_time <- x
 
       settings[[list_name]]$grain$taxonomic <- y
 
