@@ -6,7 +6,6 @@
 \usage{
 prepare_env(
   set_list,
-  reg_exp = "\\\\.tif",
   base_dir = if (Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt/envcube",
     ""),
   create_short_desc = TRUE,
@@ -17,8 +16,6 @@ prepare_env(
 }
 \arguments{
 \item{set_list}{list. usually from yaml::read_yaml("settings/setup.yaml")}
-
-\item{reg_exp}{Character. Used to limit returned files.}
 
 \item{base_dir}{Character. Passed to \code{base_dir} argument of
 \code{envFunc::name_env_out()}}

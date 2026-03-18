@@ -12,7 +12,7 @@ run_all(
   current_store = "reg_cont",
   upstream_proj = "envRange",
   upstream_store = "grd",
-  upstream_ext = run_all_combos$ext_time,
+  upstream_ext = run_all_combos$extent_time,
   upstream_tax_grains = run_all_combos$taxonomic,
   current_lev = run_all_combos$filt_lev,
   upstream_lev = NULL,
@@ -36,7 +36,7 @@ run_all(
 \item{settings_file}{File path of yaml file containing a list of default contexts (or 'scales') usually from
 "settings/scales.yaml".
 The contexts list must contain extent, grain & optionally aoi as first list elements, with secondary lists of
-vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
+vector, filt_col, filt_level, buffer, extent_time, region_taxa under extent,
 res_x, res_y, res_time, taxonomic under grain, and
 vector, filt_col, filt_level, buffer under aoi.}
 
@@ -45,7 +45,7 @@ contained within another list. Use NULL if the extent, grain and aoi elements ar
 not contained in another list.}
 
 \item{run_all_combos}{List of specific settings vectors to vary the default settings with and
-run all combinations of stores for. These are currently limited to ext_time, taxonomic grain & filt_level settings.}
+run all combinations of stores for. These are currently limited to extent_time, taxonomic grain & filt_level settings.}
 
 \item{current_proj, current_store}{Current project & store names in which running this function and
 running multiple outputs, e.g. 'envRegCont' & 'reg_cont'. Used for checking if existing \code{track_file}s exist.}
@@ -55,9 +55,9 @@ i.e. the precursor project that contains the combos of settings context director
 e.g. 'envRange' & 'grd'.}
 
 \item{upstream_ext}{Character vector of upstream temporal extents corresponding to
-the 'ext_time' setting in \code{settings$extent}, e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y").
+the 'extent_time' setting in \code{settings$extent}, e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y").
 Often the same for current and upstream, and usually sourced from run_all_combos.
-Only needed if different to current project ext_time specified in \code{run_all_combos}.
+Only needed if different to current project extent_time specified in \code{run_all_combos}.
 Numbers must be preceded by 'P' and followed by 'D', 'M', or 'Y'.}
 
 \item{upstream_tax_grains}{Character vector of taxonomic grains for the current & upstream

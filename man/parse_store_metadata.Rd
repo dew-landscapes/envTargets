@@ -8,7 +8,8 @@ parse_store_metadata(
   project = basename(here::here()),
   store_base = "../../out",
   targets_yaml = "_targets.yaml",
-  scales_yaml = "scales.yaml"
+  scales_yaml = "scales.yaml",
+  recurse_depth = 3
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ for within the \code{store_base}}
 
 \item{scales_yaml}{Character. Name of the \code{scales.yaml} file(s) to search
 for within the \code{store_base}}
+
+\item{recurse_depth}{Numeric. Passed to the recurse argument of \code{fs::dir_ls()}}
 }
 \value{
 Tibble of parsed metadata

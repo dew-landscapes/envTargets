@@ -9,7 +9,7 @@ find_context_combos(
   store,
   store_base = fs::path("..", "..", "out"),
   settings = yaml::read_yaml("settings/scales.yaml")$default,
-  ext = settings$extent$ext_time,
+  ext = settings$extent$extent_time,
   lev = settings$aoi$filt_lev,
   tax_grains = settings$grain$taxonomic,
   lev_all_type = "all_in_vec",
@@ -29,11 +29,11 @@ relating to the context combos.}
 
 \item{settings}{List of contexts (or 'scales') usually from yaml::read_yaml("settings/scales.yaml").
 Must contain extent, grain & optionally aoi as first list elements, with secondary lists of
-vector, filt_col, filt_level, buffer, ext_time, region_taxa under extent,
+vector, filt_col, filt_level, buffer, extent_time, region_taxa under extent,
 res_x, res_y, res_time, taxonomic under grain, and
 vector, filt_col, filt_level, buffer under aoi.}
 
-\item{ext}{Character vector of temporal extents to vary the \code{ext_time} setting in \code{settings$extent},
+\item{ext}{Character vector of temporal extents to vary the \code{extent_time} setting in \code{settings$extent},
 e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y"). Numbers must be preceded with 'P' and followed by 'Y'.}
 
 \item{lev}{Character vector of filter levels to vary the \code{filt_level} setting in \code{settings$aoi}.
@@ -63,11 +63,11 @@ Usually one of the last files created in the project/store, and or one used down
 track files in stores that have a region taxa setting and those that don't.}
 }
 \value{
-Data frame with ext_time, rank, filt_level, path, exists and combo columns,
-with each row representing a combination of the ext_time, taxonomic & filt_level inputs.
+Data frame with extent_time, rank, filt_level, path, exists and combo columns,
+with each row representing a combination of the extent_time, taxonomic & filt_level inputs.
 }
 \description{
-Finds all context combinations for mulitple ext_time, taxonmic grain, and filt_level values
+Finds all context combinations for mulitple extent_time, taxonmic grain, and filt_level values
 specified as vectors in a yaml file. Also returns the associated store paths for each combo via envFunc::name_env_out
 corresponding to a file in the store, and an indication if it exists.
 }

@@ -420,6 +420,7 @@ raster window (via `terra::window()`).
 | `envTargets::extract_min_date()` | function | Extract a minimum date to use in the project, based on the settings |
 | `envTargets::extract_temporal_grain()` | function | Get the temporal grain from settings |
 | `envTargets::find_context_combos()` | function | Find context combinations based on settings |
+| `envTargets::find_file()` | function | Search down through a directory until file is found |
 | `envTargets::get_deps()` | function | Get dependencies |
 | `envTargets::make_env_stack()` | function | Make a spatRaster from env_df |
 | `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |
