@@ -9,7 +9,6 @@ prepare_env(
   base_dir = if (Sys.info()["sysname"] == "Windows") "I:" else fs::path("/mnt/envcube",
     ""),
   create_short_desc = TRUE,
-  is_static = FALSE,
   max_date_only = TRUE,
   ...
 )
@@ -23,10 +22,7 @@ prepare_env(
 \item{create_short_desc}{Logical. Create a short description to use as a
 unique 'name'. Requires columns 'name' and 'func'.}
 
-\item{is_static}{Logical. If the \code{start_date} field is 'static' set this to
-TRUE.}
-
-\item{max_date_only}{Logical. Only used if \code{is_static} is FALSE Filter
+\item{max_date_only}{Logical. Filter
 rows duplicated by \code{layer} and \code{func} to the latest \code{start_date}.}
 
 \item{...}{Passed to envRaster::name_env_tif}
