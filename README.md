@@ -422,7 +422,6 @@ raster window (via `terra::window()`).
 | `envTargets::find_context_combos()` | function | Find context combinations based on settings |
 | `envTargets::find_file()` | function | Search down through a directory until file is found |
 | `envTargets::get_deps()` | function | Get dependencies |
-| `envTargets::make_env_stack()` | function | Make a spatRaster from env_df |
 | `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |
 | `envTargets::make_targets()` | function | Make targets |
 | `envTargets::make_tars()` | function | Make tars |
@@ -430,7 +429,6 @@ raster window (via `terra::window()`).
 | `envTargets::parse_store_metadata()` | function | Parse metadata in the file path of a (env) targets store |
 | `envTargets::predict_terra_tiles()` | function | Predict a model across tiles |
 | `envTargets::prepare_bookdown_yaml()` | function | Prepare \_bookdown.yaml within a targets workflow |
-| `envTargets::prepare_env()` | function | Prepare a tibble of environmental layers from settings |
 | `envTargets::render_with_deps()` | function | Render bookdown and force Rmd file dependencies |
 | `envTargets::run_all()` | function | Run all targets stores for multiple settings contexts |
 | `envTargets::sdm_progress()` | function | Check completion of an envSDMs run |
