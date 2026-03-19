@@ -6,7 +6,7 @@
 \usage{
 extract_min_date(
   settings,
-  temporal_extent = "ext_time",
+  temporal_extent = "extent_time",
   max_year = as.numeric(format(Sys.Date() - 365, "\%Y"))
 )
 }
