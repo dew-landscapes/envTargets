@@ -51,7 +51,7 @@ parse_store_metadata <- function(project = basename(here::here())
                                       , \(x) envFunc::extract_scale(element = project
                                                                     , scales = x
                                                                     ) |>
-                                        envFunc::name_env_out(dir_with_context = TRUE)
+                                        envFunc::name_env_out()
                                       )
                     ) |>
       tidyr::unnest(cols = c(data)) |>
