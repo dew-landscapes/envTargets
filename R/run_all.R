@@ -1,50 +1,23 @@
 #' Run all targets stores for multiple settings contexts
 #'
-#' @param settings_file File path of yaml file containing a list of default contexts (or 'scales') usually from
-#' "settings/scales.yaml".
-#' The contexts list must contain extent, grain & optionally aoi as first list elements, with secondary lists of
-#' vector, filt_col, filt_level, buffer, extent_time, region_taxa under extent,
-#' res_x, res_y, res_time, taxonomic under grain, and
-#' vector, filt_col, filt_level, buffer under aoi.
-#' @param list_name Name of the list in the settings file that contains the list of relevant contexts if it is
-#' contained within another list. Use NULL if the extent, grain and aoi elements are primary and
-#' not contained in another list.
-#' @param run_all_combos List of specific settings vectors to vary the default settings with and
-#' run all combinations of stores for. These are currently limited to extent_time, taxonomic grain & filt_level settings.
-#' @param current_proj,current_store Current project & store names in which running this function and
-#' running multiple outputs, e.g. 'envRegCont' & 'reg_cont'. Used for checking if existing `track_file`s exist.
-#' @param upstream_proj,upstream_store Upstream project & store names required for the current project,
-#' i.e. the precursor project that contains the combos of settings context directories & the store within them,
-#' e.g. 'envRange' & 'grd'.
-#' @param upstream_ext Character vector of upstream temporal extents corresponding to
-#' the 'extent_time' setting in `settings$extent`, e.g. c("P10Y", "P20Y", "P30Y", "P50Y", "P100Y").
-#' Often the same for current and upstream, and usually sourced from run_all_combos.
-#' Only needed if different to current project extent_time specified in `run_all_combos`.
-#' Numbers must be preceded by 'P' and followed by 'D', 'M', or 'Y'.
-#' @param upstream_tax_grains Character vector of taxonomic grains for the current & upstream
-#' projects, e.g. c("species", "subspecies"). Often the same for current and upstream, and
-#' usually sourced from run_all_combos. Only needed if different to current project taxonomic grain/s
-#' specified in `run_all_combos`.
-#' @param current_lev,upstream_lev Vectors of current & upstream filter levels corresponding to the 'filt_level' setting
-#' in `settings$grain`. Use NULL for upstream where the upstream project does not have an aoi setting.
-#' @param current_track_file,upstream_track_file Names of files to use for tracking if a store relating to a context combo has been run.
-#' Usually one of the last files created in the project/store, and or one used downstream.
-#' @param lev_all_type Type of method used to determine 'all' values for `lev`.
-#' Either, 'all_in_vec' which retrieves all levels in the column in the vector corresponding to those specified by
-#' `settings$aoi$filt_col` and `settings$aoi$vector` respectively,
-#' or 'already_run', which retrieves levels from existing store directories that have already been run,
-#' i.e. those that are available.
-#' @param current_aoi_setting,upstream_aoi_setting Names of the 'aoi' type settings for the current and
-#' upstream projects containing the list of aoi related measures (vector, filt_col, filt_level, buffer),
-#' e.g. sometimes referred to as 'region' instead of 'aoi'. Set to NULL if there is no aoi setting.
+#' @param scales_yaml Character. Name of the `scales.yaml` file to obtain settings contexts.
+#' Must be the same in both the current and upstream projects.
+#' @param current_combos_df,upstream_combos_df Data frames of settings context combinations
+#' for all the settings contexts, where the columns are the settings and the rows are each
+#' combination of different values for each setting, e.g. as produced by
+#' envTargets::make_context_combos.
+#' @param current_proj Current project name in which running this function and running multiple outputs,
+#' e.g. 'envRegCont'. Used for checking if existing `track_file`s exist.
+#' @param upstream_proj Upstream project name required for the current project,
+#' i.e. the precursor project that contains the combos of settings context directories within them,
+#' e.g. 'envRange'.
+#' @param current_track_file,upstream_track_file Names of files to use for tracking if a store relating to a context
+#' combo has been run. Usually one of the last files created in the project/store, and or one used downstream.
 #' @param force_new Logical. Force new runs of stores corresponding to the context combos if they exist?
 #' @param run_file Name of file that contains the targets stores and code to create them corresponding to
 #' the current project.
-#' @param data_dir Path to data directory for sourcing the vector with the filter levels if `lev_all_type` = 'all_in_vec'.
-#' @param current_store_base,upstream_store_base Base directory for the current and upstream targets stores, e.g. "../../out" or "projects/data".
-#' @param current_region_taxa,upstream_region_taxa Logical. Is there a region taxa setting for the current and
-#' upstream projects? Used to enable searching for track files in stores that have a region taxa setting and
-#' those that don't.
+#' @param current_store_base,upstream_store_base Base directory for the current and upstream targets stores,
+#' e.g. "../../out" or "projects/data".
 #'
 #' @return Executes the run file for all the combinations of settings specified.
 #'
@@ -52,91 +25,73 @@
 #'
 #' @examples
 #'
-run_all <- function(settings_file = "settings/scales.yaml"
-                    , list_name = "default"
-                    , run_all_combos = yaml::read_yaml("settings/run_all.yaml")
-                    , current_proj = "envRegCont"
-                    , current_store = "reg_cont"
+run_all <- function(scales_yaml = "scales.yaml"
+                    , current_combos_df
+                    , upstream_combos_df
+                    , current_proj = basename(here::here())
                     , upstream_proj = "envRange"
-                    , upstream_store = "grd"
-                    , upstream_ext = run_all_combos$extent_time
-                    , upstream_tax_grains = run_all_combos$taxonomic
-                    , current_lev = run_all_combos$filt_lev
-                    , upstream_lev = NULL
                     , upstream_track_file = "grd_files"
                     , current_track_file = "reg_cont_tbl_tidy"
-                    , current_aoi_setting = "aoi"
-                    , upstream_aoi_setting = NULL
-                    , lev_all_type = "all_in_vec"
                     , force_new = TRUE
                     , run_file = "run.R"
-                    , data_dir = yaml::read_yaml("settings/setup.yaml")$data_dir
                     , current_store_base = fs::path("..", "..", "out")
                     , upstream_store_base = fs::path("..", "..", "out")
-                    , current_region_taxa = TRUE
-                    , upstream_region_taxa = TRUE
-                    , upstream_grain = TRUE
-                    , current_grain = TRUE
 
 ) {
 
   # load settings ----
-  settings <- yaml::read_yaml(settings_file)
+  scales_file <- find_file(path = here::here(), find = scales_yaml, recurse_depth = 1)
 
-  # check stores exist ----
-  # check if relevant upstream project stores exist & stops if they don't
-  find_context_combos(proj = upstream_proj
-                      , store = upstream_store
-                      , store_base = upstream_store_base
-                      , settings = if(!is.null(list_name)) settings[[list_name]] else settings
-                      , ext = upstream_ext
-                      , lev = upstream_lev
-                      , tax_grains = upstream_tax_grains
-                      , lev_all_type = lev_all_type
-                      , stop_if_not_run = TRUE
-                      , aoi_setting = upstream_aoi_setting
-                      , track_file = upstream_track_file
-                      , data_dir = data_dir
-                      , region_taxa_setting = upstream_region_taxa
-                      , grain = upstream_grain
+  settings <- envFunc::extract_scale(element = project
+                                     , scales = scales_file
+  )
+
+  # check upstream ----
+  # check if relevant upstream project files exist & stop if they don't
+  find_context_files(project = upstream_proj
+                     , scales_yaml = "scales.yaml"
+                     , combos_df = upstream_combos_df
+                     , track_file = upstream_track_file
+                     , stop_if_not_run = TRUE
+                     , store_base = upstream_store_base
   )
 
   # find contexts to run ----
-  ext_rank_lev <- find_context_combos(proj = current_proj
-                                      , store = current_store
-                                      , store_base = current_store_base
-                                      , settings = if(!is.null(list_name)) settings[[list_name]] else settings
-                                      , ext = run_all_combos$extent_time
-                                      , lev = current_lev
-                                      , tax_grains = run_all_combos$taxonomic
-                                      , lev_all_type = lev_all_type
-                                      , stop_if_not_run = FALSE
-                                      , aoi_setting = current_aoi_setting
-                                      , track_file = current_track_file
-                                      , data_dir = data_dir
-                                      , region_taxa_setting = current_region_taxa
-                                      , grain = current_grain
+  contexts_to_run <- find_context_files(project = current_proj
+                                        , scales_yaml = "scales.yaml"
+                                        , combos_df = current_combos_df
+                                        , track_file = current_track_file
+                                        , stop_if_not_run = FALSE
+                                        , store_base = current_store_base
   ) %>%
-    {if(!force_new) dplyr::filter(., !exists) else .} %>%
-    {if(!"filt_level" %in% names(.)) dplyr::mutate(., filt_level = NA) else .}
+    {if(!force_new) dplyr::filter(., !exists) else .}
 
   # run all contexts ----
+  if(force_new|nrow(contexts_to_run)) {
 
-  if(force_new|nrow(ext_rank_lev)) {
+    purrr::walk(1:nrow(current_combos_df), \(a) {
 
-    purrr::pwalk(list(ext_rank_lev$extent_time
-                      , ext_rank_lev$rank
-                      , ext_rank_lev$filt_level
-    )
-    , \(x, y, z) {
+      new_set <- names(settings) |>
+        purrr::set_names() |>
+        purrr::map(\(x) {
 
-      settings[[list_name]]$extent$extent_time <- x
+          cols <- names(envFunc::extract_scale()[[x]])
 
-      settings[[list_name]]$grain$taxonomic <- y
+          elements <- combos_df |>
+            dplyr::slice(a) |>
+            dplyr::select(tidyr::all_of(cols)) |>
+            as.list() |>
+            purrr::map(\(l) if(is.na(l)) NULL else l)
 
-      if(!all(is.na(z))) settings[[list_name]]$region$filt_level <- z
+          set_list <- list()
 
-      yaml::write_yaml(settings, settings_file)
+          set_list[[x]] <- list() |>
+            c(elements)
+
+        }
+        )
+
+      yaml::write_yaml(new_set, scales_file)
 
       source(run_file)
 
