@@ -41,7 +41,7 @@ make_context_combos <- function(project = basename(here::here())
       dplyr::distinct(across(settings$aoi$aoi_filt_col)) |>
       dplyr::pull()
 
-    vars <- c(vars, list(aoi_filt_level = vec_lev))
+    vars <- c(list(aoi_filt_level = vec_lev), vars)
 
   }
 
