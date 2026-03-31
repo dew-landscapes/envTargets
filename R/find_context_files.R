@@ -36,15 +36,15 @@ find_context_files <- function(project = basename(here::here())
                                      , scales = scales_file
   )
 
-  # all settings ----
-  all_set <- settings |>
+  # all settings df----
+  all_set_df <- settings |>
     purrr::list_flatten(name_spec = "{inner}") |>
     purrr::map(\(x) ifelse(is.null(x), NA, x)) |> # convert NULL to NA, otherwise dplyr::bind_cols drops the NULL elements and lose those columns below
     dplyr::bind_cols()
 
   # add non-varied settings ----
   combos_df <- combos_df |>
-    dplyr::bind_cols(all_set |>
+    dplyr::bind_cols(all_set_df |>
                        dplyr::select(-names(combos_df))
     )
 
@@ -75,9 +75,8 @@ find_context_files <- function(project = basename(here::here())
   }
   ) |>
     dplyr::bind_rows() |>
-    dplyr::mutate(path = fs::path(path, track_file)
-                  , exists = file.exists(path)
-                  , file = gsub(paste0(store_base, project, "/"), "", path)
+    dplyr::mutate(file = fs::dir_ls(path, regexp = track_file, recurse = TRUE)
+                  , exists = ifelse(length(file) > 0, TRUE, FALSE)
     )
 
   # not run ----
