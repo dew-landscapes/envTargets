@@ -36,7 +36,7 @@ make_context_combos <- function(project = basename(here::here())
                                        , scales = scales_file
     )
 
-    vec_lev <- sfarrow::st_read_parquet(fs::path(vec_dir, paste0(settings$aoi$aoi_vector, vec_ext))) |>
+    vec_lev <- sfarrow::st_read_parquet(fs::path(vec_dir, paste0(settings$aoi$aoi_vector, ".parquet"))) |>
       sf::st_drop_geometry() |>
       dplyr::distinct(across(settings$aoi$aoi_filt_col)) |>
       dplyr::pull()
