@@ -2,17 +2,20 @@
 #'
 #' @param scales_yaml Character. Name of the `scales.yaml` file to obtain settings contexts.
 #' Must be the same in both the current and upstream projects.
-#' @param current_combos_df,upstream_combos_df Data frames of settings context combinations
-#' for all the settings contexts, where the columns are the settings and the rows are each
-#' combination of different values for each setting, e.g. as produced by
-#' envTargets::make_context_combos.
+#' @param combos_df Data frame of combinations of the settings to be varied, where the columns are
+#' the setting names and the rows are each combination of different values for each setting,
+#' e.g. as produced by envTargets::make_context_combos. The setting names must correspond to those in
+#' the settings for the `current_proj` element in the `scales_yaml`.
 #' @param current_proj Current project name in which running this function and running multiple outputs,
-#' e.g. 'envRegCont'. Used for checking if existing `track_file`s exist.
+#' e.g. 'envRegCont'.
 #' @param upstream_proj Upstream project name required for the current project,
 #' i.e. the precursor project that contains the combos of settings context directories within them,
 #' e.g. 'envRange'.
-#' @param current_track_file,upstream_track_file Names of files to use for tracking if a store relating to a context
-#' combo has been run. Usually one of the last files created in the project/store, and or one used downstream.
+#' @param current_track_file,upstream_track_file Names of files to use for tracking if a store
+#' relating to a context combo has been run. Usually one of the last files created in the project/store,
+#' and or one used downstream, e.g. 'grd_files' in the envRange project as the upstream file, and
+#' 'reg_cont_tbl_tidy' in envRegCont if that project was the current. Otherwise, defaults to the
+#' '_targets.yaml', as an indication the store has been run (although possibly not fully).
 #' @param force_new Logical. Force new runs of stores corresponding to the context combos if they exist?
 #' @param run_file Name of file that contains the targets stores and code to create them corresponding to
 #' the current project.
@@ -26,12 +29,11 @@
 #' @examples
 #'
 run_all <- function(scales_yaml = "scales.yaml"
-                    , current_combos_df
-                    , upstream_combos_df
+                    , combos_df
                     , current_proj = basename(here::here())
-                    , upstream_proj = "envRange"
-                    , upstream_track_file = "grd_files"
-                    , current_track_file = "reg_cont_tbl_tidy"
+                    , upstream_proj
+                    , upstream_track_file = "_targets.yaml"
+                    , current_track_file = "_targets.yaml"
                     , force_new = TRUE
                     , run_file = "run.R"
                     , current_store_base = fs::path("..", "..", "out")
@@ -39,14 +41,43 @@ run_all <- function(scales_yaml = "scales.yaml"
 
 ) {
 
-  # load settings ----
+  # settings ----
+  ## scales file ----
   scales_file <- find_file(path = here::here(), find = scales_yaml, recurse_depth = 1)
 
-  settings <- envFunc::extract_scale(element = project
-                                     , scales = scales_file
+  ## all projects ----
+  # all project settings in scales yaml
+  settings_all <- yaml::read_yaml(scales_file)
+
+  ## current project ----
+  settings_cur_proj <- envFunc::extract_scale(element = current_proj
+                                              , scales = scales_file
   )
 
+  ## df ----
+  # current & upstream projects
+  # for adding non-varied settings below
+  c(current_proj, upstream_proj) |>
+    purrr::set_names(c("all_cur_set", "all_up_set")) |>
+    purrr::map(\(p) {
+
+      envFunc::extract_scale(element = p
+                             , scales = scales_file
+      ) |>
+        purrr::list_flatten(name_spec = "{inner}") |>
+        purrr::map(\(x) ifelse(is.null(x), NA, x)) |> # convert NULL to NA, otherwise dplyr::bind_cols drops the NULL elements and lose those columns below
+        dplyr::bind_cols()
+
+    }
+    ) |>
+    list2env(envir = .GlobalEnv)
+
   # check upstream ----
+  ## upstream combos ----
+  upstream_combos_df <- combos_df |>
+    dplyr::select(tidyr::any_of(names(all_up_set))) |>
+    dplyr::distinct()
+
   # check if relevant upstream project files exist & stop if they don't
   find_context_files(project = upstream_proj
                      , scales_yaml = "scales.yaml"
@@ -57,9 +88,10 @@ run_all <- function(scales_yaml = "scales.yaml"
   )
 
   # find contexts to run ----
+  # only relevant if force_new = FALSE
   contexts_to_run <- find_context_files(project = current_proj
                                         , scales_yaml = "scales.yaml"
-                                        , combos_df = current_combos_df
+                                        , combos_df = combos_df
                                         , track_file = current_track_file
                                         , stop_if_not_run = FALSE
                                         , store_base = current_store_base
@@ -67,17 +99,24 @@ run_all <- function(scales_yaml = "scales.yaml"
     {if(!force_new) dplyr::filter(., !exists) else .}
 
   # run all contexts ----
+  ## add non-varied settings ----
+  current_combos_df <- combos_df |>
+    dplyr::bind_cols(all_cur_set |>
+                       dplyr::select(-names(combos_df))
+    )
+
+  ## run all ----
   if(force_new|nrow(contexts_to_run)) {
 
     purrr::walk(1:nrow(current_combos_df), \(a) {
 
-      new_set <- names(settings) |>
+      new_set <- names(settings_cur_proj) |>
         purrr::set_names() |>
         purrr::map(\(x) {
 
           cols <- names(envFunc::extract_scale()[[x]])
 
-          elements <- combos_df |>
+          elements <- current_combos_df |>
             dplyr::slice(a) |>
             dplyr::select(tidyr::all_of(cols)) |>
             as.list() |>
@@ -91,7 +130,9 @@ run_all <- function(scales_yaml = "scales.yaml"
         }
         )
 
-      yaml::write_yaml(new_set, scales_file)
+      settings_all[[current_proj]] <- new_set
+
+      yaml::write_yaml(settings_all, scales_file)
 
       source(run_file)
 

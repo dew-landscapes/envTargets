@@ -29,12 +29,26 @@ find_context_files <- function(project = basename(here::here())
 
 ) {
 
+  # settings ----
   scales_file <- find_file(path = here::here(), find = scales_yaml, recurse_depth = 1)
 
   settings <- envFunc::extract_scale(element = project
                                      , scales = scales_file
   )
 
+  # all settings ----
+  all_set <- settings |>
+    purrr::list_flatten(name_spec = "{inner}") |>
+    purrr::map(\(x) ifelse(is.null(x), NA, x)) |> # convert NULL to NA, otherwise dplyr::bind_cols drops the NULL elements and lose those columns below
+    dplyr::bind_cols()
+
+  # add non-varied settings ----
+  combos_df <- combos_df |>
+    dplyr::bind_cols(all_set |>
+                       dplyr::select(-names(combos_df))
+    )
+
+  # find all paths ----
   paths_df <- purrr::map(1:nrow(combos_df), \(a) {
 
     names(settings) |>
@@ -56,7 +70,7 @@ find_context_files <- function(project = basename(here::here())
 
       }
       ) |>
-      envFunc::name_env_out(base_dir = fs::path("../../out", project))
+      envFunc::name_env_out(base_dir = fs::path(store_base, project))
 
   }
   ) |>
@@ -71,12 +85,13 @@ find_context_files <- function(project = basename(here::here())
     dplyr::filter(!exists) |>
     dplyr::pull(file)
 
+  # completed run ----
   completed_run <- paths_df |>
     dplyr::filter(exists) |>
     dplyr::pull(file)
 
   #options(warning.length = 5000L)
-
+  # stop ----
   if(length(not_run) & stop_if_not_run) stop(paste0("These context files have not been run in "
                                                     , project, ": \n")
                                              , stringr::str_flatten(not_run, collapse = "\n")

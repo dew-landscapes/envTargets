@@ -2,8 +2,7 @@
 #'
 #' @param project Character. One or more project names. e.g. basename(here::here()) from
 #' inside, say, an RStudio project.
-#' @param scales_yaml Character. Name of the `scales.yaml` file to obtain context values for
-#' non-varied context settings.
+#' @param scales_yaml Character. Name of the `scales.yaml` file containing the `project` settings.
 #' @param vars List of settings and values to vary, e.g. list(extent_time = c("P10Y", "P50Y", "P100Y")
 #' , taxonomic = c("species", "subspecies")).
 #' @param all_vec_lev Logical. Use all levels in the spatial vector specified by the aoi_vector setting within the
@@ -23,9 +22,7 @@
 #'
 make_context_combos <- function(project = basename(here::here())
                                 , scales_yaml = "scales.yaml"
-                                , vars = list(grain_taxonomic = c("species", "subspecies")
-                                              , extent_time = c("P10Y", "P50Y", "P100Y")
-                                )
+                                , vars
                                 , all_vec_lev = FALSE
                                 , vec_dir = fs::path(yaml::read_yaml("settings/setup.yaml")$data_dir, "vector")
 
@@ -44,21 +41,11 @@ make_context_combos <- function(project = basename(here::here())
       dplyr::distinct(across(settings$aoi$aoi_filt_col)) |>
       dplyr::pull()
 
-    vars <- c(vars, list(aoi_filt_col = settings$aoi$aoi_filt_col), list(aoi_filt_level = vec_lev))
+    vars <- c(vars, list(aoi_filt_level = vec_lev))
 
   }
 
-  df <- envFunc::extract_scale(element = project
-                               , scales = scales_file
-  ) |>
-    purrr::list_flatten(name_spec = "{inner}") |>
-    purrr::map(\(x) ifelse(is.null(x), NA, x)) |> # convert NULL to NA, otherwise dplyr::bind_cols drops the NULL elements and lose those columns below
-    dplyr::bind_cols()
-
-  res <- do.call(tidyr::expand_grid, vars) |>
-    dplyr::bind_cols(df |>
-                       dplyr::select(-names(vars))
-    )
+  res <- do.call(tidyr::expand_grid, vars)
 
   return(res)
 
