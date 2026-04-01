@@ -31,7 +31,11 @@ write_tars <- function(tars
 
   store_dir <- dirname(tars[[1]]$store)
 
-  fs::dir_create(store_dir)
+  if(!dir.exists(store_dir)) {
+
+    fs::dir_create(store_dir)
+
+  }
 
   yaml::write_yaml(tars
                    , fs::path(store_dir, "_targets.yaml")
