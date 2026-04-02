@@ -19,7 +19,8 @@ prepare_bookdown_yaml <- function(report_dir = "report"
     lifecycle::deprecate_warn(
       when = "2026-04-02",
       what = "prepare_bookdown_yaml(output_dir)",
-      with = "render_with_deps(output_directory)"
+      with = "render_with_deps(output_dir)",
+      details = "when used with render_with_deps, the output_dir argument is passed via ... to bookdown::render_book()"
     )
   }
 
