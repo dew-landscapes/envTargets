@@ -59,7 +59,7 @@ find_context_files <- function(project = basename(here::here())
 
         elements <- combos_df |>
           dplyr::slice(a) |>
-          dplyr::select(tidyr::all_of(cols)) |>
+          dplyr::select(tidyr::any_of(cols)) |>
           as.list() |>
           purrr::map(\(l) if(is.na(l)) NULL else l)
 
@@ -75,7 +75,7 @@ find_context_files <- function(project = basename(here::here())
   }
   ) |>
     dplyr::bind_rows() |>
-    dplyr::mutate(file = fs::dir_ls(path, regexp = track_file, recurse = TRUE)
+    dplyr::mutate(file = fs::dir_ls(path, regexp = track_file, recurse = TRUE, type = "file")
                   , exists = ifelse(length(file) > 0, TRUE, FALSE)
     )
 
