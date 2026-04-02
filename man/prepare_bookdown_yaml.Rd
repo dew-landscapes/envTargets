@@ -7,8 +7,8 @@
 prepare_bookdown_yaml(
   report_dir = "report",
   store = tars$report$store,
-  output_dir = "compiled_report",
-  repo = usethis::git_remotes()$origin
+  repo = usethis::git_remotes()$origin,
+  output_dir = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -17,8 +17,7 @@ prepare_bookdown_yaml(
 \item{store}{Character. Path to the targets store into which the report
 should be saved}
 
-\item{output_dir}{Character. Name to give the folder in \code{store} where the
-report will be saved.}
+\item{repo}{Path to github repository}
 }
 \value{
 Path to saved \verb{_bookdown.yaml}.
