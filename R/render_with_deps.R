@@ -1,8 +1,9 @@
 
 #' Render bookdown and force Rmd file dependencies
 #'
-#' Moving the report to the targets store relies on output_dir being specified
-#' in the _bookdown.yaml file, usually written within report_prep.R
+#' Moving the report to the targets store relies on output_directory being
+#' specified, usually via the _bookdown.yaml file, itself usually written within
+#' report_prep.R using `envTargets::prepare_bookdown_yaml()`.
 #'
 #' Enables a bookdown 'target' within a [targets workflow](https://books.ropensci.org/targets/).
 #' I was unable to get [bookdowntargets](https://mps9506.r-universe.dev/bookdowntargets/doc/manual.html)
@@ -13,47 +14,38 @@
 #'
 #' Based on code found here: https://github.com/shirdekel/phd_thesis/commit/cc66e1b9d9305a4b21e8489836545ecc4475f9ee
 #'
-#' @param input_directory Path in which `index.Rmd` can be found.
+#' @param input_directory Path in which `index.Rmd` can be found from `here::here()`.
+#' Will almost certainly fail if `input_directory` is not found within `here::here()`.
+#' @param output_directory Path (often a tars store) in which final output(s)
+#' will be found. If `NULL` (default) `output_directory` will be
+#' `yaml::read_yaml(here::here(input_directory, "_bookdown.yaml"))$output_directory` if that
+#' `bookdown.yaml` exists, otherwise `here::here(input_directory, "_book")`.
 #' @param deps Any dependencies for the report. Note that these are not made
 #' available within the knit, they just trigger the target to run.
-#' @param remove_main Logical. Delete _main.Rmd froom the input directory before
-#' knit?
-#' @param clean_out_dir Logical. Delete the book before knit? Useful if chapter
-#' names are changed, leaving orphaned `.html` files in the output directory.
-#' @param clean_up Logical. Delete intermediary files after knit?
 #' @param ... Arguments to boookdown::render_book, especially for output_format.
 #'
-#' @return Return value is just the `output_dir` specified in `_bookdown.yaml`,
-#' or, if that is not specified, the value of `input_directory`. Files needed
-#' for the book are written into the output directory.
+#' @return Return value is just the `output_directory`. Files needed
+#' for the book are written to the output directory.
 #'
 #' @author Shir Dekel (modified by nw)
 #' @export
 render_with_deps <- function(input_directory = "."
-                             , deps
-                             , remove_main = TRUE
-                             , clean_out_dir = TRUE
-                             , clean_up = TRUE
+                             , output_directory = NULL
+                             , deps = NULL
                              , ...
                              ) {
 
-  output_dir <- yaml::read_yaml(fs::path(input_directory, "_bookdown.yaml"))$output_dir
+  input_directory <- here::here(input_directory)
 
-  if(is.null(output_dir)) output_dir <- fs::path(input_directory, "_book")
+  if(is.null(output_directory)) {
 
-  if(remove_main) {
+    if(file.exists(fs::path(input_directory, "_bookdown.yaml"))) {
 
-    unlink(fs::path(input_directory, "_main.Rmd"))
+      output_directory <- yaml::read_yaml(fs::path(input_directory, "_bookdown.yaml"))$output_dir
 
-  }
+    } else {
 
-  if(clean_out_dir) {
-
-    if(xfun::in_dir(input_directory, dir.exists(output_dir))) {
-
-      xfun::in_dir(input_directory
-                   , fs::dir_delete(output_dir)
-                   )
+      output_directory <- fs::path(input_directory, "_book")
 
     }
 
@@ -62,37 +54,10 @@ render_with_deps <- function(input_directory = "."
   xfun::in_dir(input_directory
                , bookdown::render_book(input = "index.Rmd"
                                        , config_file = "_bookdown.yaml"
-                                       , ...)
+                                       , ...
+                                       )
                )
 
-  if(clean_up) {
-
-    del_files <- fs::dir_info(input_directory
-                              , regexp = "_main"
-                              ) |>
-      dplyr::filter(type == "file") |>
-      dplyr::pull(path)
-
-    if(length(del_files)) {
-
-      fs::file_delete(del_files)
-
-    }
-
-    del_dirs <- fs::dir_info(input_directory
-                             , regexp = "_book.*|_main.*"
-                             ) |>
-      dplyr::filter(type == "directory") |>
-      dplyr::pull(path)
-
-    if(length(del_dirs)) {
-
-      fs::dir_delete(del_dirs)
-
-    }
-
-  }
-
-  return(gsub("^\\.\\.\\/", "", output_dir))
+  return(gsub("^\\.\\.\\/", "", output_directory))
 
 }
