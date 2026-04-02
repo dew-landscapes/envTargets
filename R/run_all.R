@@ -105,7 +105,7 @@ run_all <- function(scales_yaml = "scales.yaml"
                        dplyr::select(-names(combos_df))
     )
 
-  rm(list = c("all_cur_set", "all_up_set")) # remove no longer used elements assigned to the global environment so they don't show in the global environment outside the function
+  rm(list = c("all_cur_set", "all_up_set"), envir = .GlobalEnv) # remove no longer used elements assigned to the global environment so they don't show in the global environment outside the function
 
   ## run all ----
   if(force_new|nrow(contexts_to_run)) {
