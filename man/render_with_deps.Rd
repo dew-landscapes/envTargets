@@ -4,26 +4,19 @@
 \alias{render_with_deps}
 \title{Render bookdown and force Rmd file dependencies}
 \usage{
-render_with_deps(
-  input_directory = ".",
-  output_directory = NULL,
-  deps = NULL,
-  ...
-)
+render_with_deps(input_directory = ".", deps = NULL, ...)
 }
 \arguments{
 \item{input_directory}{Path in which \code{index.Rmd} can be found from \code{here::here()}.
-Will almost certainly fail if \code{input_directory} is not found within \code{here::here()}.}
-
-\item{output_directory}{Path (often a tars store) in which final output(s)
-will be found. If \code{NULL} (default) \code{output_directory} will be
+Will almost certainly fail if \code{input_directory} is not found within \code{here::here()}.
 \code{yaml::read_yaml(here::here(input_directory, "_bookdown.yaml"))$output_directory} if that
 \code{bookdown.yaml} exists, otherwise \code{here::here(input_directory, "_book")}.}
 
 \item{deps}{Any dependencies for the report. Note that these are not made
 available within the knit, they just trigger the target to run.}
 
-\item{...}{Arguments to boookdown::render_book, especially for output_format.}
+\item{...}{Arguments to boookdown::render_book, especially \code{output_format}
+and \code{output_dir.}}
 }
 \value{
 Return value is just the \code{output_directory}. Files needed
