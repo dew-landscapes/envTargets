@@ -3,8 +3,7 @@
 #' @param report_dir Character. Where should the `_bookdown.yaml` file be saved?
 #' @param store Character. Path to the targets store into which the report
 #' should be saved
-#' @param output_dir Character. Name to give the folder in `store` where the
-#' report will be saved.
+#' @param repo Path to github repository
 #'
 #' @returns Path to saved `_bookdown.yaml`.
 #' @export
@@ -12,8 +11,17 @@
 #' @examples
 prepare_bookdown_yaml <- function(report_dir = "report"
                                   , store = tars$report$store
-                                  , output_dir = "compiled_report"
-                                  , repo = usethis::git_remotes()$origin) {
+                                  , repo = usethis::git_remotes()$origin
+                                  , output_dir = lifecycle::deprecated()
+                                  ) {
+
+  if (lifecycle::is_present(output_dir)) {
+    lifecycle::deprecate_warn(
+      when = "2026-04-02",
+      what = "prepare_bookdown_yaml(output_dir)",
+      with = "render_with_deps(output_directory)"
+    )
+  }
 
   out_file <- fs::path(report_dir, "_bookdown.yaml")
 
@@ -33,13 +41,6 @@ prepare_bookdown_yaml <- function(report_dir = "report"
                                                  unname()
                                                )
                                , repo = repo
-                               , output_dir = fs::path(store |>
-                                                         gsub("\\.\\.\\/\\.\\."
-                                                              , "../../.."
-                                                              , x = _
-                                                              )
-                                                       , output_dir
-                                                       )
                                ) |>
     yaml::write_yaml(out_file)
 
