@@ -6,37 +6,33 @@
 \usage{
 render_with_deps(
   input_directory = ".",
-  deps,
-  remove_main = TRUE,
-  clean_out_dir = TRUE,
-  clean_up = TRUE,
+  output_directory = NULL,
+  deps = NULL,
   ...
 )
 }
 \arguments{
-\item{input_directory}{Path in which \code{index.Rmd} can be found.}
+\item{input_directory}{Path in which \code{index.Rmd} can be found from \code{here::here()}.
+Will almost certainly fail if \code{input_directory} is not found within \code{here::here()}.}
+
+\item{output_directory}{Path (often a tars store) in which final output(s)
+will be found. If \code{NULL} (default) \code{output_directory} will be
+\code{yaml::read_yaml(here::here(input_directory, "_bookdown.yaml"))$output_directory} if that
+\code{bookdown.yaml} exists, otherwise \code{here::here(input_directory, "_book")}.}
 
 \item{deps}{Any dependencies for the report. Note that these are not made
 available within the knit, they just trigger the target to run.}
 
-\item{remove_main}{Logical. Delete _main.Rmd froom the input directory before
-knit?}
-
-\item{clean_out_dir}{Logical. Delete the book before knit? Useful if chapter
-names are changed, leaving orphaned \code{.html} files in the output directory.}
-
-\item{clean_up}{Logical. Delete intermediary files after knit?}
-
 \item{...}{Arguments to boookdown::render_book, especially for output_format.}
 }
 \value{
-Return value is just the \code{output_dir} specified in \verb{_bookdown.yaml},
-or, if that is not specified, the value of \code{input_directory}. Files needed
-for the book are written into the output directory.
+Return value is just the \code{output_directory}. Files needed
+for the book are written to the output directory.
 }
 \description{
-Moving the report to the targets store relies on output_dir being specified
-in the _bookdown.yaml file, usually written within report_prep.R
+Moving the report to the targets store relies on output_directory being
+specified, usually via the _bookdown.yaml file, itself usually written within
+report_prep.R using \code{envTargets::prepare_bookdown_yaml()}.
 }
 \details{
 Enables a bookdown 'target' within a \href{https://books.ropensci.org/targets/}{targets workflow}.
