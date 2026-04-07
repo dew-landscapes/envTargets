@@ -10,6 +10,10 @@
 #' @param force_new Logical. If TRUE, predict tile even if it already exists.
 #' Leave as `TRUE` to let targets decide if the tile needs to be rewritten.
 #' @param load_packages Character. Any packages to load before predict.
+#' @param check_tifs Logical. If `TRUE` and `force_new` is `FALSE`, an attempt
+#' will be made to open any existing tile. If that fails, the tail will be
+#' deleted. While expensive in time, this ensures that any crashes that result
+#' in incomplete tiles are fixed.
 #' @param ... Passed to `terra::predict()`. Object, model and filename arguments
 #' are already passed so are not needed here. e.g. `na.rm = TRUE`;
 #' `overwrite = TRUE`; or `wopt = list(datatype = "INT1U")`
@@ -25,6 +29,7 @@ predict_terra_tiles <- function(extent_df
                                 , out_dir
                                 , force_new = TRUE
                                 , load_packages = NULL
+                                , check_tifs = TRUE
                                 , ...
                                 ) {
 
@@ -45,6 +50,24 @@ predict_terra_tiles <- function(extent_df
                                 , force_new
                                 )
                   )
+
+  if(all(check_tifs, isFALSE(force_new))) {
+
+    safe_rast <- purrr::safely(terra::rast)
+
+    fails <- extent_df |>
+      dplyr::mutate(fails = purrr::map(out_file, safe_rast)
+                    , fails = purrr::map_lgl(fails, \(x) !is.null(x$error))
+                    ) |>
+      dplyr::filter(fails)
+
+    if(nrow(fails)) {
+
+      fs::file_delete(fails$out_file)
+
+    }
+
+  }
 
   if(sum(extent_df$to_do) > 0) {
 
