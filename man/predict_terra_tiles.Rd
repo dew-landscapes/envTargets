@@ -12,6 +12,7 @@ predict_terra_tiles(
   out_dir,
   force_new = TRUE,
   load_packages = NULL,
+  check_tifs = TRUE,
   ...
 )
 }
@@ -32,6 +33,11 @@ be saved.}
 Leave as \code{TRUE} to let targets decide if the tile needs to be rewritten.}
 
 \item{load_packages}{Character. Any packages to load before predict.}
+
+\item{check_tifs}{Logical. If \code{TRUE} and \code{force_new} is \code{FALSE}, an attempt
+will be made to open any existing tile. If that fails, the tail will be
+deleted. While expensive in time, this ensures that any crashes that result
+in incomplete tiles are fixed.}
 
 \item{...}{Passed to \code{terra::predict()}. Object, model and filename arguments
 are already passed so are not needed here. e.g. \code{na.rm = TRUE};
