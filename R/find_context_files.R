@@ -9,6 +9,8 @@
 #' envTargets::make_context_combos.
 #' @param track_file Name of file with extension to use for tracking if a store relating to a context combo has been
 #' run. Usually one of the last files created in the project/store, and or one used downstream.
+#' If in a store/folder below the lowest context specified in `combos_df`, then include
+#' the store path with the file, e.g. "reg_cont/objects/reg_cont_tbl_tidy".
 #' @param stop_if_not_run Logical. Stop if the any of the specified context files haven't been run
 #' and don't have a `track_file`?
 #' @param store_base Path to base directory of project store, e.g. "../../out"  or "/projects/data".
@@ -75,24 +77,19 @@ find_context_files <- function(project = basename(here::here())
   }
   ) |>
     dplyr::bind_rows() |>
-    dplyr::mutate(file = ifelse(dir.exists(path), fs::dir_ls(path, regexp = track_file, recurse = TRUE, type = "file"), NA)
-                  , exists = ifelse(length(file) > 0 & !is.na(file), TRUE, FALSE)
+    dplyr::mutate(file = fs::path(path, track_file)
+                  , exists = file.exists(file)
     )
 
   # not run ----
   not_run <- paths_df |>
     dplyr::filter(!exists) |>
-    dplyr::mutate(file = ifelse(is.na(file), path, file)) |>
     dplyr::pull(file)
 
-  # completed run ----
-  completed_run <- paths_df |>
-    dplyr::filter(exists) |>
-    dplyr::pull(file)
-
-  #options(warning.length = 5000L)
   # stop ----
-  if(length(not_run) & stop_if_not_run) stop(paste0("These context paths have not been run in "
+  options(warning.length = 5000L)
+
+  if(length(not_run) & stop_if_not_run) stop(paste0("These context files have not been run in "
                                                     , project, ": \n")
                                              , stringr::str_flatten(not_run, collapse = "\n")
   )
