@@ -75,13 +75,14 @@ find_context_files <- function(project = basename(here::here())
   }
   ) |>
     dplyr::bind_rows() |>
-    dplyr::mutate(file = fs::dir_ls(path, regexp = track_file, recurse = TRUE, type = "file")
-                  , exists = ifelse(length(file) > 0, TRUE, FALSE)
+    dplyr::mutate(file = ifelse(dir.exists(path), fs::dir_ls(path, regexp = track_file, recurse = TRUE, type = "file"), NA)
+                  , exists = ifelse(length(file) > 0 & !is.na(file), TRUE, FALSE)
     )
 
   # not run ----
   not_run <- paths_df |>
     dplyr::filter(!exists) |>
+    dplyr::mutate(file = ifelse(is.na(file), path, file)) |>
     dplyr::pull(file)
 
   # completed run ----
@@ -91,7 +92,7 @@ find_context_files <- function(project = basename(here::here())
 
   #options(warning.length = 5000L)
   # stop ----
-  if(length(not_run) & stop_if_not_run) stop(paste0("These context files have not been run in "
+  if(length(not_run) & stop_if_not_run) stop(paste0("These context paths have not been run in "
                                                     , project, ": \n")
                                              , stringr::str_flatten(not_run, collapse = "\n")
   )
