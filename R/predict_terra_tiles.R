@@ -45,29 +45,38 @@ predict_terra_tiles <- function(extent_df
     dplyr::mutate(out_file = fs::path(out_dir
                                       , paste0(tile_name, ".tif")
                                       )
-                  # the file is 'to_do' if: it doesn't exist; or 'force_new' is TRUE
-                  , to_do = any(!file.exists(out_file)
-                                , force_new
-                                )
                   )
 
+  # check if tifs are openable (and delete them if not) before making 'to_do'
   if(all(check_tifs, isFALSE(force_new))) {
 
-    safe_rast <- purrr::safely(terra::rast)
+    if(any(purrr::map_lgl(extent_df$out_file, file.exists))) {
 
-    fails <- extent_df |>
-      dplyr::mutate(fails = purrr::map(out_file, safe_rast)
-                    , fails = purrr::map_lgl(fails, \(x) !is.null(x$error))
-                    ) |>
-      dplyr::filter(fails)
+      safe_rast <- purrr::safely(terra::rast)
 
-    if(nrow(fails)) {
+      fails <- extent_df |>
+        dplyr::filter(purrr::map_lgl(extent_df$out_file, file.exists)) |>
+        dplyr::mutate(fails = purrr::map(out_file, safe_rast)
+                      , fails = purrr::map_lgl(fails, \(x) !is.null(x$error))
+                      ) |>
+        dplyr::filter(fails)
 
-      fs::file_delete(fails$out_file)
+      if(nrow(fails)) {
+
+        fs::file_delete(fails$out_file)
+
+      }
 
     }
 
   }
+
+  extent_df <- extent_df |>
+    # the file is 'to_do' if: it doesn't exist; or 'force_new' is TRUE
+    dplyr::mutate(to_do = any(!file.exists(out_file)
+                              , force_new
+                              )
+                  )
 
   if(sum(extent_df$to_do) > 0) {
 
