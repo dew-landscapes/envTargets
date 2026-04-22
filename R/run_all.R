@@ -76,7 +76,9 @@ run_all <- function(scales_yaml = "scales.yaml"
   ## upstream combos ----
   upstream_combos_df <- combos_df |>
     dplyr::select(tidyr::any_of(names(all_up_set))) |>
-    dplyr::distinct()
+    dplyr::distinct() |>
+    # split combo stores in envRegContSum (e.g. "species--subspecies") into relevant upstream components
+    tidyr::separate_longer_delim(cols = tidyr::any_of(names(combos_df)), delim = "--")
 
   # check if relevant upstream project files exist & stop if they don't
   find_context_files(project = upstream_proj
@@ -103,6 +105,13 @@ run_all <- function(scales_yaml = "scales.yaml"
   current_combos_df <- combos_df |>
     dplyr::bind_cols(all_cur_set |>
                        dplyr::select(-names(combos_df))
+    ) |>
+    dplyr::mutate(
+      across(everything(), \(x) ifelse(grepl("--", x)
+                                       , stringr::str_split(x, "--")
+                                       , x
+      )
+      )
     )
 
   rm(list = c("all_cur_set", "all_up_set"), envir = .GlobalEnv) # remove no longer used elements assigned to the global environment so they don't show in the global environment outside the function
@@ -122,7 +131,8 @@ run_all <- function(scales_yaml = "scales.yaml"
             dplyr::slice(a) |>
             dplyr::select(tidyr::all_of(cols)) |>
             as.list() |>
-            purrr::map(\(l) if(is.na(l)) NULL else l)
+            purrr::map(\(l) if(is.na(l)) NULL else l) |>
+            purrr::list_flatten()
 
           set_list <- list()
 
