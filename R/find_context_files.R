@@ -57,7 +57,7 @@ find_context_files <- function(project = basename(here::here())
       purrr::set_names() |>
       purrr::map(\(x) {
 
-        cols <- names(envFunc::extract_scale()[[x]])
+        cols <- names(envFunc::extract_scale(scales = scales_file)[[x]])
 
         elements <- combos_df |>
           dplyr::slice(a) |>
