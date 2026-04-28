@@ -91,8 +91,14 @@ summarise_store_data <- function(tars = NULL
 
   if(prep_filter_sf) {
 
-    x_col <- grep("x|lon", site_cols, value = TRUE)
-    y_col <- grep("y|lat", site_cols, value = TRUE)[1]
+    rename_df <- tibble::tibble(old_name = c(site_cols)) |>
+      dplyr::mutate(new_name = dplyr::if_else(grepl("lat|east", old_name), "x", NA_character_)
+                    , new_name = dplyr::if_else(grepl("lon|north", old_name), "y", new_name)
+                    ) |>
+      dplyr::distinct() |>
+      dplyr::select(new_name, old_name)
+
+    rename_vec <- tibble::deframe(rename_df)
 
     result <- result |>
       dplyr::mutate(filter_sf_data = purrr::map(name
@@ -104,7 +110,7 @@ summarise_store_data <- function(tars = NULL
                                                                               )
                                                                 ) |>
                                                   dplyr::distinct() |>
-                                                  dplyr::rename(x = !!rlang::ensym(x_col), y = !!rlang::ensym(y_col))
+                                                  dplyr::rename(tidyselect::any_of(rename_vec))
                                                 )
                     )
 
