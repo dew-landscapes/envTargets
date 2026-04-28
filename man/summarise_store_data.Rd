@@ -15,7 +15,9 @@ summarise_store_data(
   taxa_cols = "taxa",
   rmd_dir = NULL,
   deps = NULL,
-  use_arrow = TRUE
+  use_arrow = TRUE,
+  prep_filter_sf = TRUE,
+  filter_sf_round = 3
 )
 }
 \arguments{
@@ -43,6 +45,13 @@ If left as \code{NULL}, will use \code{tars_name}.}
 \item{use_arrow}{Logical. Use \code{arrow::open_dataset()} instead of
 \code{tar_read_raw} on store objects. Saves memory, but requires targets to be
 saved as parquets (with no file extension).}
+
+\item{prep_filter_sf}{Logical. Prepare site-only (lat, long) data for
+use in 'filter_sf' summary maps?}
+
+\item{filter_sf_round}{Numeric. \code{digits} argument of \code{base::round()} for
+use in rounding \code{site_cols}. Ignored if \code{prep_filter_sf} is not
+\code{TRUE}.}
 }
 \value{
 tibble

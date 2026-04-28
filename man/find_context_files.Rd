@@ -25,7 +25,9 @@ are the settings and the rows are each combination of different values for each 
 envTargets::make_context_combos.}
 
 \item{track_file}{Name of file with extension to use for tracking if a store relating to a context combo has been
-run. Usually one of the last files created in the project/store, and or one used downstream.}
+run. Usually one of the last files created in the project/store, and or one used downstream.
+If in a store/folder below the lowest context specified in \code{combos_df}, then include
+the store path with the file, e.g. "reg_cont/objects/reg_cont_tbl_tidy".}
 
 \item{stop_if_not_run}{Logical. Stop if the any of the specified context files haven't been run
 and don't have a \code{track_file}?}
