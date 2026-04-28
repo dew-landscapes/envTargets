@@ -110,4 +110,6 @@ summarise_store_data <- function(tars = NULL
 
   }
 
+  return(result)
+
 }
