@@ -92,8 +92,8 @@ summarise_store_data <- function(tars = NULL
   if(prep_filter_sf) {
 
     rename_df <- tibble::tibble(old_name = c(site_cols)) |>
-      dplyr::mutate(new_name = dplyr::if_else(grepl("lat|east", old_name), "x", NA_character_)
-                    , new_name = dplyr::if_else(grepl("lon|north", old_name), "y", new_name)
+      dplyr::mutate(new_name = dplyr::if_else(grepl("lat|north", old_name), "y", NA_character_)
+                    , new_name = dplyr::if_else(grepl("lon|east", old_name), "x", new_name)
                     ) |>
       dplyr::distinct() |>
       dplyr::select(new_name, old_name)
