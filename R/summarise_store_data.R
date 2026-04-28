@@ -17,6 +17,11 @@
 #' @param use_arrow Logical. Use `arrow::open_dataset()` instead of
 #' `tar_read_raw` on store objects. Saves memory, but requires targets to be
 #' saved as parquets (with no file extension).
+#' @param prep_filter_sf Logical. Prepare site-only (lat, long) data for
+#' use in 'filter_sf' summary maps?
+#' @param filter_sf_round Numeric. `digits` argument of `base::round()` for
+#' use in rounding `site_cols`. Ignored if `prep_filter_sf` is not
+#' `TRUE`.
 #'
 #' @return tibble
 #' @export
@@ -33,6 +38,8 @@ summarise_store_data <- function(tars = NULL
                                  , rmd_dir = NULL
                                  , deps = NULL
                                  , use_arrow = TRUE
+                                 , prep_filter_sf = TRUE
+                                 , filter_sf_round = 3
                                  ) {
 
   if(is.null(rmd_dir)) rmd_dir <- tars_name
@@ -49,9 +56,9 @@ summarise_store_data <- function(tars = NULL
 
   store <- tars[[tars_name]]$store
 
-   targets::tar_meta(store = store
-                      , targets_only = TRUE
-                      ) |>
+  result <- targets::tar_meta(store = store
+                    , targets_only = TRUE
+                    ) |>
     dplyr::filter(grepl(keeps, name)) |>
     dplyr::filter(! grepl(paste0(excludes, collapse = "|"), name)) |>
     dplyr::filter(type == "stem") |>
@@ -81,5 +88,26 @@ summarise_store_data <- function(tars = NULL
     tidyr::unnest(cols = c(summary)) |>
     dplyr::arrange(desc(taxa), desc(records), desc(visits), desc(sites)) |>
     dplyr::select(! dplyr::where(is.list))
+
+  if(prep_filter_sf) {
+
+    x_col <- grep("x|lon", site_cols, value = TRUE)
+    y_col <- grep("y|lat", site_cols, value = TRUE)[1]
+
+    result <- result |>
+      dplyr::mutate(filter_sf_data = purrr::map(name
+                                                , \(x) arrow::open_dataset(fs::path(store, "objects", x)) |>
+                                                  dplyr::distinct(dplyr::across(tidyselect::any_of(site_cols))) |>
+                                                  dplyr::collect() |>
+                                                  dplyr::mutate(dplyr::across(tidyselect::any_of(site_cols)
+                                                                              , \(x) base::round(x, digits = filter_sf_round)
+                                                                              )
+                                                                ) |>
+                                                  dplyr::distinct() |>
+                                                  dplyr::rename(x = !!rlang::ensym(x_col), y = !!rlang::ensym(y_col))
+                                                )
+                    )
+
+  }
 
 }
