@@ -415,6 +415,7 @@ raster window (via `terra::window()`).
 
 | object | class | description |
 |:---|:---|:---|
+| `envTargets::collect_clean_objects()` | function | Collect the objects of a cleaning workflow from a targets store |
 | `envTargets::collect_values()` | function | Create a vector of values from a targets store object |
 | `envTargets::combine_tiles()` | function | Combine tiles into a single raster |
 | `envTargets::extract_min_date()` | function | Extract a minimum date to use in the project, based on the settings |
@@ -435,4 +436,5 @@ raster window (via `terra::window()`).
 | `envTargets::sdm_progress()` | function | Check completion of an envSDMs run |
 | `envTargets::store_dir()` | function | Generate a path to a storage directory |
 | `envTargets::summarise_store_data()` | function | Summarise a cleaning workflow from a targets store |
+| `envTargets::summarise_store_object()` | function | Summarise an object from a cleaning workflow from a targets store |
 | `envTargets::write_tars()` | function | Write tars as yaml |
