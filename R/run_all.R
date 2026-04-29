@@ -76,9 +76,9 @@ run_all <- function(scales_yaml = "scales.yaml"
   ## upstream combos ----
   upstream_combos_df <- combos_df |>
     dplyr::select(tidyr::any_of(names(all_up_set))) |>
-    dplyr::distinct() |>
+    dplyr::distinct() %>%
     # split combo stores in envRegContSum (e.g. "species--subspecies") into relevant upstream components
-    tidyr::separate_longer_delim(cols = tidyr::any_of(names(combos_df)), delim = "--")
+    {if(any(grepl("--", .))) tidyr::separate_longer_delim(., cols = tidyr::any_of(names(combos_df)), delim = "--") else .}
 
   # check if relevant upstream project files exist & stop if they don't
   find_context_files(project = upstream_proj
