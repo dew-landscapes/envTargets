@@ -6,7 +6,8 @@
 #' enables mapping over the objects in a targets workflow (potentially making
 #' use of parallel processing to acheive the same result as
 #' `summarise_store_data()`). Also see `envTargets::collect_clean_objects()` for
-#' help creating a data frame to map over.
+#' creating a data frame to map over (and ensure upstream dependencies are
+#' tracked).
 #'
 #' @param store Path to store containing `object`
 #' @param object Name of `tars` element to summarise
@@ -15,7 +16,6 @@
 #' sites, visits and taxa respectively
 #' @param rmd_dir What directory is the Rmd associated with each object found?
 #' If left as `NULL`, will use `tars_name`.
-#' @param deps Dependencies that, if updated, should invalidate the output.
 #' @param use_arrow Logical. Use `arrow::open_dataset()` instead of
 #' `tar_read_raw` on store objects. Saves memory, but requires targets to be
 #' saved as parquets (with no file extension).
@@ -30,17 +30,16 @@
 #'
 #' @examples
 summarise_store_object <- function(store
-                                 , object
-                                 , prefix = "bio_"
-                                 , site_cols = c("lat", "long", "cell_lat", "cell_long")
-                                 , visit_cols = c("lat", "long", "cell_lat", "cell_long", "year")
-                                 , taxa_cols = c("original_name", "taxa")
-                                 , rmd_dir = NULL
-                                 , deps = NULL
-                                 , use_arrow = TRUE
-                                 , prep_filter_sf = TRUE
-                                 , filter_sf_round = 3
-                                 ) {
+                                   , object
+                                   , prefix = "bio_"
+                                   , site_cols = c("lat", "long", "cell_lat", "cell_long")
+                                   , visit_cols = c("lat", "long", "cell_lat", "cell_long", "year")
+                                   , taxa_cols = c("original_name", "taxa")
+                                   , rmd_dir = NULL
+                                   , use_arrow = TRUE
+                                   , prep_filter_sf = TRUE
+                                   , filter_sf_round = 3
+                                   ) {
 
   if(is.null(rmd_dir)) rmd_dir <- basename(store)
 

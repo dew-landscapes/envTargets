@@ -8,6 +8,7 @@
 #' not be collected
 #' @param extras Any object that matches any regex provided in `extras` will be
 #' collected
+#' @param deps Dependencies that, if updated, should invalidate the output.
 #'
 #' @return tibble
 #' @export
@@ -17,6 +18,7 @@ collect_clean_objects <- function(store
                                   , prefix = "bio_"
                                   , excludes = c("path", "dir", "file", "env", "rich", "names")
                                   , extras = c("clean_end")
+                                  , deps = NULL
                                   ) {
 
   keeps <- paste0(paste0("^", prefix)
