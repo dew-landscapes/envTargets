@@ -8,7 +8,8 @@ collect_clean_objects(
   store,
   prefix = "bio_",
   excludes = c("path", "dir", "file", "env", "rich", "names"),
-  extras = c("clean_end")
+  extras = c("clean_end"),
+  deps = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ not be collected}
 
 \item{extras}{Any object that matches any regex provided in \code{extras} will be
 collected}
+
+\item{deps}{Dependencies that, if updated, should invalidate the output.}
 }
 \value{
 tibble
