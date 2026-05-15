@@ -11,7 +11,7 @@ summarise_store_object(
   site_cols = c("lat", "long", "cell_lat", "cell_long"),
   visit_cols = c("lat", "long", "cell_lat", "cell_long", "year"),
   taxa_cols = c("original_name", "taxa"),
-  rmd_dir = NULL,
+  rmd_dir = basename(store),
   use_arrow = TRUE,
   prep_filter_sf = TRUE,
   filter_sf_round = 3
@@ -28,18 +28,18 @@ summarise_store_object(
 sites, visits and taxa respectively}
 
 \item{rmd_dir}{What directory is the Rmd associated with each object found?
-If left as \code{NULL}, will use \code{tars_name}.}
+Used to build a \emph{partial} path to the relevant .rmd file - but set the
+parent directory in your knit e.g \verb{here::here('report', clean_summary$rmd))} or \code{fs::path(system.file('rmd', package = "envClean"), clean_summary$rmd)} (or use \code{envClean::report_clean()})}
 
 \item{use_arrow}{Logical. Use \code{arrow::open_dataset()} instead of
 \code{tar_read_raw} on store objects. Saves memory, but requires targets to be
 saved as parquets (with no file extension).}
 
-\item{prep_filter_sf}{Logical. Prepare site-only (lat, long) data for
-use in 'filter_sf' summary maps?}
+\item{prep_filter_sf}{Logical. Prepare site-only (lat, long) data for use in
+'filter_sf' summary maps?}
 
-\item{filter_sf_round}{Numeric. \code{digits} argument of \code{base::round()} for
-use in rounding \code{site_cols}. Ignored if \code{prep_filter_sf} is not
-\code{TRUE}.}
+\item{filter_sf_round}{Numeric. \code{digits} argument of \code{base::round()} for use
+in rounding \code{site_cols}. Ignored if \code{prep_filter_sf} is not \code{TRUE}.}
 }
 \value{
 tibble
