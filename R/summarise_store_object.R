@@ -15,33 +15,32 @@
 #' @param site_cols,visit_cols,taxa_cols Columns within objects identifying
 #' sites, visits and taxa respectively
 #' @param rmd_dir What directory is the Rmd associated with each object found?
-#' If left as `NULL`, will use `tars_name`.
+#'   Used to build a _partial_ path to the relevant .rmd file - but set the
+#'   parent directory in your knit e.g `here::here('report',
+#'   clean_summary$rmd))` or `fs::path(system.file('rmd', package = "envClean"),
+#'   clean_summary$rmd)` (or use `envClean::report_clean()`)
 #' @param use_arrow Logical. Use `arrow::open_dataset()` instead of
-#' `tar_read_raw` on store objects. Saves memory, but requires targets to be
-#' saved as parquets (with no file extension).
-#' @param prep_filter_sf Logical. Prepare site-only (lat, long) data for
-#' use in 'filter_sf' summary maps?
-#' @param filter_sf_round Numeric. `digits` argument of `base::round()` for
-#' use in rounding `site_cols`. Ignored if `prep_filter_sf` is not
-#' `TRUE`.
+#'   `tar_read_raw` on store objects. Saves memory, but requires targets to be
+#'   saved as parquets (with no file extension).
+#' @param prep_filter_sf Logical. Prepare site-only (lat, long) data for use in
+#'   'filter_sf' summary maps?
+#' @param filter_sf_round Numeric. `digits` argument of `base::round()` for use
+#'   in rounding `site_cols`. Ignored if `prep_filter_sf` is not `TRUE`.
 #'
 #' @return tibble
 #' @export
 #'
-#' @examples
 summarise_store_object <- function(store
                                    , object
                                    , prefix = "bio_"
                                    , site_cols = c("lat", "long", "cell_lat", "cell_long")
                                    , visit_cols = c("lat", "long", "cell_lat", "cell_long", "year")
                                    , taxa_cols = c("original_name", "taxa")
-                                   , rmd_dir = NULL
+                                   , rmd_dir = basename(store)
                                    , use_arrow = TRUE
                                    , prep_filter_sf = TRUE
                                    , filter_sf_round = 3
                                    ) {
-
-  if(is.null(rmd_dir)) rmd_dir <- basename(store)
 
   result <- targets::tar_meta(store = store
                               , targets_only = TRUE
@@ -67,7 +66,7 @@ summarise_store_object <- function(store
                                                                         )
                                        )
                   , path = fs::path(store, "objects", name)
-                  , rmd = here::here("report", "child", rmd_dir, paste0(gsub(prefix, "", name), ".Rmd"))
+                  , rmd = fs::path(rmd_dir, paste0(gsub(prefix, "", name), ".Rmd"))
                   ) |>
     tidyr::unnest(cols = c(summary)) |>
     dplyr::select(! dplyr::where(is.list))
