@@ -4,6 +4,7 @@
 #' @param store Character. Path to the targets store into which the report
 #' should be saved
 #' @param repo Path to github repository
+#' @param rmd_files Character vector of .Rmd files to include in the bookdown.yaml file. If NULL (default), searches in report/ for any standard-named files (eg. 0010_intro.Rmd). index.Rmd is always included.
 #'
 #' @returns Path to saved `_bookdown.yaml`.
 #' @export
@@ -13,7 +14,7 @@ prepare_bookdown_yaml <- function(report_dir = "report"
                                   , store = tars$report$store
                                   , repo = usethis::git_remotes()$origin
                                   , output_dir = lifecycle::deprecated()
-                                  ) {
+                                  , rmd_files = NULL) {
 
   if (lifecycle::is_present(output_dir)) {
     lifecycle::deprecate_warn(
@@ -28,6 +29,14 @@ prepare_bookdown_yaml <- function(report_dir = "report"
 
   proj <- basename(here::here())
 
+  if(is.null(rmd_files)) {
+    rmd_files <- fs::dir_ls(path = "report"
+                            , regexp = "/\\d{4}.*Rmd$"
+    ) |>
+      gsub("report/", "", x = _) |>
+      unname()
+  }
+
   ymlthis::yml_empty() |>
     ymlthis::yml_bookdown_opts(delete_merged_file = TRUE
                                , edit = paste0("https =//github.com/dew-landscapes/"
@@ -35,11 +44,7 @@ prepare_bookdown_yaml <- function(report_dir = "report"
                                                , "/edit/master/%s"
                                                )
                                , rmd_files = c("index.Rmd"
-                                               , fs::dir_ls(path = "report"
-                                                            , regexp = "/\\d{4}.*Rmd$"
-                                                            ) |>
-                                                 gsub("report/", "", x = _) |>
-                                                 unname()
+                                               , rmd_files
                                                )
                                , repo = repo
                                ) |>
