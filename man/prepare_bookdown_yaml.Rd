@@ -8,7 +8,8 @@ prepare_bookdown_yaml(
   report_dir = "report",
   store = tars$report$store,
   repo = usethis::git_remotes()$origin,
-  output_dir = lifecycle::deprecated()
+  output_dir = lifecycle::deprecated(),
+  rmd_files = NULL
 )
 }
 \arguments{
@@ -18,6 +19,8 @@ prepare_bookdown_yaml(
 should be saved}
 
 \item{repo}{Path to github repository}
+
+\item{rmd_files}{Character vector of .Rmd files to include in the bookdown.yaml file. If NULL (default), searches in report/ for any standard-named files (eg. 0010_intro.Rmd). index.Rmd is always included.}
 }
 \value{
 Path to saved \verb{_bookdown.yaml}.
