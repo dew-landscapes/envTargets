@@ -11,6 +11,9 @@
 #' @param min_tiles Numeric. Ignored if tile_length is not `NULL`. Minimum
 #' number of tiles to return. If `tile_size` returns less than `min_tiles`, then
 #'  `min_tiles` will be used instead of `tile_size`.
+#' @param overlap Numeric. Passed to the `buffer` argument of
+#' `terra::getTileExtents()` - the number of additional rows and columns added
+#' to each tile (e.g. to enable using tiles with `terra::focal()`).
 #' @param add_hectares Logical. Append the hectares of each tile? Ignored if
 #' the raster at `base_grid_path` is not projected.
 #'
@@ -24,6 +27,7 @@ make_tile_extents <- function(base_grid_path
                               , tile_length = 512
                               , tile_size = 100000
                               , min_tiles = 4
+                              , overlap = 0
                               , add_hectares = TRUE
                               ) {
 
@@ -47,6 +51,7 @@ make_tile_extents <- function(base_grid_path
 
     extents <- terra::getTileExtents(r
                                      , tiles_y
+                                     , buffer = overlap
                                      )
 
   }
@@ -61,6 +66,7 @@ make_tile_extents <- function(base_grid_path
 
     extents <- terra::getTileExtents(r
                                      , tiles_y
+                                     , buffer = overlap
                                      )
 
     if(nrow(extents) < min_tiles) {
@@ -73,6 +79,7 @@ make_tile_extents <- function(base_grid_path
 
       extents <- terra::getTileExtents(r
                                        , tiles_y
+                                       , buffer = overlap
                                        )
 
     } else {
@@ -85,6 +92,7 @@ make_tile_extents <- function(base_grid_path
 
       extents <- terra::getTileExtents(r
                                        , tiles_y
+                                       , buffer = overlap
                                        )
 
     }
