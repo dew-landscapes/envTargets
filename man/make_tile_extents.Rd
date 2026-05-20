@@ -11,6 +11,7 @@ make_tile_extents(
   tile_length = 512,
   tile_size = 1e+05,
   min_tiles = 4,
+  overlap = 0,
   add_hectares = TRUE
 )
 }
@@ -31,6 +32,10 @@ a projected raster with units of metres will result in tiles of size 10 km by
 \item{min_tiles}{Numeric. Ignored if tile_length is not \code{NULL}. Minimum
 number of tiles to return. If \code{tile_size} returns less than \code{min_tiles}, then
 \code{min_tiles} will be used instead of \code{tile_size}.}
+
+\item{overlap}{Numeric. Passed to the \code{buffer} argument of
+\code{terra::getTileExtents()} - the number of additional rows and columns added
+to each tile (e.g. to enable using tiles with \code{terra::focal()}).}
 
 \item{add_hectares}{Logical. Append the hectares of each tile? Ignored if
 the raster at \code{base_grid_path} is not projected.}
