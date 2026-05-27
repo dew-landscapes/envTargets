@@ -418,6 +418,7 @@ raster window (via `terra::window()`).
 | `envTargets::collect_clean_objects()` | function | Collect the objects of a cleaning workflow from a targets store |
 | `envTargets::collect_values()` | function | Create a vector of values from a targets store object |
 | `envTargets::combine_tiles()` | function | Combine tiles into a single raster |
+| `envTargets::env_tar_group()` | function | Prepare a target for batched branching |
 | `envTargets::extract_min_date()` | function | Extract a minimum date to use in the project, based on the settings |
 | `envTargets::extract_temporal_grain()` | function | Get the temporal grain from settings |
 | `envTargets::find_context_files()` | function | Find context files based on settings combos in a data frame |
