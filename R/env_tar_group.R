@@ -23,7 +23,7 @@ env_tar_group <- function(df
 
   n_rows <- nrow(arr)
 
-  res <- if(n_rows > cores) {
+  res <- if(n_rows > use_cores) {
 
     arr |>
       dplyr::mutate(group = rep(1:use_cores, length.out = n_rows))
