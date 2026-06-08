@@ -35,11 +35,21 @@ write_tars <- function(tars
 
     fs::dir_create(store_dir)
 
+    # ensure owner + group read/write on linux (ignored on windows)
+    fs::file_chmod(store_dir
+                   , mode = "775"
+                   )
+
   }
 
   yaml::write_yaml(tars
                    , fs::path(store_dir, "_targets.yaml")
                    )
+
+  # ensure owner + group read/write on linux (ignored on windows)
+  fs::file_chmod(fs::path(store_dir, "_targets.yaml")
+                 , mode = "775"
+                 )
 
   if(file.exists(scales_yaml)) {
 
@@ -47,6 +57,11 @@ write_tars <- function(tars
                   , fs::path(store_dir, "scales.yaml")
                   , overwrite = TRUE
                   )
+
+    # ensure owner + group read/write on linux (ignored on windows)
+    fs::file_chmod(fs::path(store_dir, "scales.yaml")
+                   , mode = "775"
+                   )
 
   } else {
 
@@ -60,6 +75,11 @@ write_tars <- function(tars
                               , include_base = TRUE
                               ) |>
       readr::write_csv(fs::path(store_dir, "package_info.csv"))
+
+    # ensure owner + group read/write on linux (ignored on windows)
+    fs::file_chmod(fs::path(store_dir, "package_info.csv")
+                   , mode = "775"
+                   )
 
   }
 
