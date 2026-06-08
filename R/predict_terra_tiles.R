@@ -18,7 +18,7 @@
 #' are already passed so are not needed here. e.g. `na.rm = TRUE`;
 #' `overwrite = TRUE`; or `wopt = list(datatype = "INT1U")`
 #'
-#' @returns Path to the tile predicted tile. Writes tile into `out_dir`.
+#' @returns Path to the predicted tile(s). Writes tile into `out_dir`.
 #' @export
 #'
 #' @examples
