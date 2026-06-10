@@ -4,14 +4,19 @@
 \alias{env_tar_group}
 \title{Prepare a target for batched branching}
 \usage{
-env_tar_group(df, col = "n", batches = use_cores)
+env_tar_group(
+  df,
+  col = "n",
+  batches = envFunc::use_cores(absolute_max =
+    yaml::read_yaml("settings/setup.yaml")$max_cores)
+)
 }
 \arguments{
 \item{df}{dataframe}
 
 \item{col}{column to use when assigning rows to groups}
 
-\item{batches}{How many groups to create? Defaults to \code{use_cores}}
+\item{batches}{How many groups to create?}
 }
 \value{
 \code{targets::tar_group()}ed dataframe
