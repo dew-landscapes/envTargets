@@ -423,6 +423,7 @@ raster window (via `terra::window()`).
 | `envTargets::extract_temporal_grain()` | function | Get the temporal grain from settings |
 | `envTargets::find_context_files()` | function | Find context files based on settings combos in a data frame |
 | `envTargets::find_file()` | function | Search down through a directory until file is found |
+| `envTargets::find_log_errors()` | function | Find any errors (or warnings) from a targets workflow |
 | `envTargets::get_deps()` | function | Get dependencies |
 | `envTargets::make_context_combos()` | function | Make context combinations data frame based on settings |
 | `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |

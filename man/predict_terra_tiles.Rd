@@ -44,7 +44,7 @@ are already passed so are not needed here. e.g. \code{na.rm = TRUE};
 \code{overwrite = TRUE}; or \code{wopt = list(datatype = "INT1U")}}
 }
 \value{
-Path to the tile predicted tile. Writes tile into \code{out_dir}.
+Path to the predicted tile(s). Writes tile into \code{out_dir}.
 }
 \description{
 Predict a model across tiles
