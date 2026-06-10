@@ -7,7 +7,7 @@
 #'
 #' @param df dataframe
 #' @param col column to use when assigning rows to groups
-#' @param batches How many groups to create? Defaults to `use_cores`
+#' @param batches How many groups to create?
 #'
 #' @returns `targets::tar_group()`ed dataframe
 #' @export
@@ -15,7 +15,7 @@
 #' @examples
 env_tar_group <- function(df
                           , col = "n"
-                          , batches = use_cores
+                          , batches = envFunc::use_cores(absolute_max = yaml::read_yaml("settings/setup.yaml")$max_cores)
                           ) {
 
   arr <- df |>
