@@ -6,7 +6,7 @@
 \usage{
 env_tar_group(
   df,
-  col = "n",
+  column = "n",
   batches = envFunc::use_cores(absolute_max =
     yaml::read_yaml("settings/setup.yaml")$max_cores)
 )
@@ -14,7 +14,7 @@ env_tar_group(
 \arguments{
 \item{df}{dataframe}
 
-\item{col}{column to use when assigning rows to groups}
+\item{column}{column to use when assigning rows to groups}
 
 \item{batches}{How many groups to create?}
 }
@@ -23,7 +23,7 @@ env_tar_group(
 }
 \description{
 Helps to minimise long tails while processing batched data frames by taking
-into account one of the columns (\code{col}) within the dataframe (usually \code{n})
+into account one of the columns (\code{column}) within the dataframe (usually \code{n})
 that is likely to be correlated with processing time. Remember to set
 \code{iteration = "group"} within the target.
 }
