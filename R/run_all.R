@@ -73,14 +73,31 @@ run_all <- function(scales_yaml = "scales.yaml"
     list2env(envir = .GlobalEnv)
 
   # check upstream ----
+  ## find relevant upstream settings ----
+  # i.e. not those that are explicitly set in the scales.yaml, e.g. not extent_time for envCleaned as that is fixed at P100Y
+  # first find non-relevant settings by comparing those for the upstream project in the scales yaml to the current project
+  non_rel_up_set <- all_cur_set |>
+    dplyr::mutate(across(tidyr::everything(), \(x) as.character(x))) |>
+    tidyr::pivot_longer(cols = tidyr::everything()) |>
+    dplyr::anti_join(all_up_set |>
+                       dplyr::mutate(across(tidyr::everything(), \(x) ifelse(x == "NULL", NA, x))
+                                     , across(tidyr::everything(), \(x) as.character(x))
+                       ) |>
+                       tidyr::pivot_longer(cols = tidyr::everything())
+    ) |>
+    dplyr::pull(name)
+
+  rel_up_set <- all_cur_set %>%
+    {if(length(non_rel_up_set)) dplyr::select(., -tidyr::any_of(non_rel_up_set)) else .}
+
   ## upstream combos ----
   upstream_combos_df <- combos_df |>
-    dplyr::select(tidyr::any_of(names(all_up_set))) |>
+    dplyr::select(tidyr::any_of(names(rel_up_set))) |>
     dplyr::distinct() %>%
     # split combo stores in envRegContSum (e.g. "species--subspecies") into relevant upstream components
     {if(any(grepl("--", .))) tidyr::separate_longer_delim(., cols = tidyr::any_of(names(combos_df)), delim = "--") else .}
 
-  # check if relevant upstream project files exist & stop if they don't
+  ## check if relevant upstream project files exist & stop if they don't ----
   find_context_files(project = upstream_proj
                      , scales_yaml = "scales.yaml"
                      , combos_df = upstream_combos_df
