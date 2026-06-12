@@ -2,7 +2,7 @@
 #'
 #' @param extent_df Tibble from `make_tile_extents()`.
 #' @param predict_stack SpatRaster, possibly from `make_env_stack()`.
-#' @param model Model object with a predict method.
+#' @param model Either model object, or path to model, with a predict method.
 #' @param terra_options List of options to be passed to `terra::terraOptions()`.
 #' e.g. `list(memfrac = 0.5)`.
 #' @param out_dir Character. Name of directory into which predicted tiles will
@@ -90,6 +90,8 @@ predict_terra_tiles <- function(extent_df
               )
 
     }
+
+    if(is.character(model)) model <- readRDS(model)
 
     purrr::walk(1:nrow(extent_df)
                 , \(x) {
