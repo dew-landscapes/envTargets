@@ -21,7 +21,7 @@ predict_terra_tiles(
 
 \item{predict_stack}{SpatRaster, possibly from \code{make_env_stack()}.}
 
-\item{model}{Model object with a predict method.}
+\item{model}{Either model object, or path to model, with a predict method.}
 
 \item{terra_options}{List of options to be passed to \code{terra::terraOptions()}.
 e.g. \code{list(memfrac = 0.5)}.}
