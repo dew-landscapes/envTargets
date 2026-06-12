@@ -7,9 +7,14 @@
 env_tar_option_set(
   script,
   tars = yaml::read_yaml("_targets.yaml"),
-  use_cores = envFunc::use_cores(absolute_max =
-    yaml::read_yaml("settings/setup.yaml")$max_cores),
-  pacs = yaml::read_yaml("settings/packages.yaml")[[script]]
+  logs = TRUE,
+  metrics = FALSE,
+  controller_local_args = list(workers = envFunc::use_cores(absolute_max =
+    yaml::read_yaml("settings/setup.yaml")$max_cores), name = "main_controller",
+    crashes_max = 1L),
+  tar_option_set_args = list(packages =
+    yaml::read_yaml("settings/packages.yaml")[[script]], controller =
+    get(controller_local_args$name))
 )
 }
 \arguments{
@@ -17,15 +22,17 @@ env_tar_option_set(
 
 \item{tars}{List, usually from \code{envTargets::make_tars()}}
 
-\item{use_cores}{How many cores to use for \href{https://books.ropensci.org/targets/performance.html#worker-storage}{distributed computing}}
+\item{logs, metrics}{Logical. \href{https://wlandau.github.io/crew/articles/logging.html#logging-worker-processes}{Log worker processes}?}
 
-\item{pacs}{Character. Packages required for \code{script}}
+\item{controller_local_args}{Named list of \code{crew::controller()} arguments}
+
+\item{tar_options_set_args}{Named list of \code{crew::controller()} arguments}
 }
 \value{
 Sets options for a targets workflow
 }
 \description{
-Also enables logging and metric
+Optionally enable logging and metric
 \href{https://wlandau.github.io/crew/articles/logging.html#logging-worker-processes}{collection}.
 See \code{envTargets::find_log_errors()} for using the logs.
 }
