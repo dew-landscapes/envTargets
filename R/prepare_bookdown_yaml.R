@@ -30,11 +30,20 @@ prepare_bookdown_yaml <- function(report_dir = "report"
   proj <- basename(here::here())
 
   if(is.null(rmd_files)) {
+
     rmd_files <- fs::dir_ls(path = "report"
                             , regexp = "/\\d{4}.*Rmd$"
-    ) |>
+                            ) |>
       gsub("report/", "", x = _) |>
       unname()
+
+  } else {
+
+    rmd_files <- c(rmd_files[grepl("index", rmd_files)]
+                   , rmd_files[!grepl("index", rmd_files)]
+                   ) |>
+      unname()
+
   }
 
   ymlthis::yml_empty() |>
