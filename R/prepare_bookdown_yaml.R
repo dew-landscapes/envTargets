@@ -42,6 +42,7 @@ prepare_bookdown_yaml <- function(report_dir = "report"
     rmd_files <- c(rmd_files[grepl("index", rmd_files)]
                    , rmd_files[!grepl("index", rmd_files)]
                    ) |>
+      gsub("report/", "", x = _) |>
       unname()
 
   }
