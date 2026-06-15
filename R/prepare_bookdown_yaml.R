@@ -32,15 +32,15 @@ prepare_bookdown_yaml <- function(report_dir = "report"
   if(is.null(rmd_files)) {
 
     rmd_files <- fs::dir_ls(path = "report"
-                            , regexp = "/\\d{4}.*Rmd$"
+                            , regexp = "/\\d{4}.*Rmd$|index\\.Rmd"
                             ) |>
-      gsub("report/", "", x = _) |>
+      basename() |>
       unname()
 
   } else {
 
-    rmd_files <- rmd_files[!grepl("index", rmd_files)] |>
-      gsub("report/", "", x = _) |>
+    rmd_files <- rmd_files |>
+      basename() |>
       unname()
 
   }
@@ -51,8 +51,8 @@ prepare_bookdown_yaml <- function(report_dir = "report"
                                                , proj
                                                , "/edit/master/%s"
                                                )
-                               , rmd_files = c("index.Rmd"
-                                               , rmd_files
+                               , rmd_files = c(rmd_files[grepl("^index\\.Rmd$", rmd_files)]
+                                               , rmd_files[!grepl("^index\\.Rmd$", rmd_files)]
                                                )
                                , repo = repo
                                ) |>
