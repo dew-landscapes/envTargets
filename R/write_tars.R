@@ -43,7 +43,11 @@ write_tars <- function(tars
                    , fs::path(store_dir, "_targets.yaml")
                    )
 
+  fs::file_chmod(fs::path(store_dir, "_targets.yaml"), mode = "775")
+
   if(file.exists(scales_yaml)) {
+
+    fs::file_chmod(scales_yaml, mode = "775")
 
     fs::file_copy(scales_yaml
                   , fs::path(store_dir, "scales.yaml")
