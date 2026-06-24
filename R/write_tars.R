@@ -67,6 +67,8 @@ write_tars <- function(tars
                               ) |>
       readr::write_csv(fs::path(store_dir, "package_info.csv"))
 
+    fs::file_chmod(fs::path(store_dir, "package_info.csv"), mode = "775")
+
   }
 
   return(invisible(NULL))
