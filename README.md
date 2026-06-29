@@ -426,6 +426,7 @@ raster window (via `terra::window()`).
 | `envTargets::find_file()` | function | Search down through a directory until file is found |
 | `envTargets::find_log_errors()` | function | Find any errors (or warnings) from a targets workflow |
 | `envTargets::get_deps()` | function | Get dependencies |
+| `envTargets::get_tar_meta()` | function | View targets metadata with progress |
 | `envTargets::make_context_combos()` | function | Make context combinations data frame based on settings |
 | `envTargets::make_tar_id()` | function | Make a suitable targets ‘id’ |
 | `envTargets::make_targets()` | function | Make targets |
