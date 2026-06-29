@@ -31,13 +31,19 @@ get_tar_meta <- function(store,
   if(!incl_branches) prog_meta <- prog_meta |>
     dplyr::filter(!grepl("_branches", name))
 
-  res <- prog_meta |>
-    dplyr::mutate(date = format(time, "%d-%b-%Y"), time = format(time, "%H:%M"),
-                  seconds = round(seconds, 2),
-                  size = paste0(fs::fs_bytes(bytes), "B")) |>
-    dplyr::mutate(size = gsub("(?<=\\d)(?=[A-Za-z])", " ", size, perl = TRUE)) |>
-    dplyr::select(name, progress, date, time, seconds, size, format, warnings,
-                  dplyr::any_of(keep_cols))
 
-  res
+  return(
+    if(nrow(prog_meta)) {
+
+      prog_meta |>
+        dplyr::mutate(date = format(time, "%d-%b-%Y"), time = format(time, "%H:%M"),
+                      seconds = round(seconds, 2),
+                      size = paste0(fs::fs_bytes(bytes), "B")) |>
+        dplyr::mutate(size = gsub("(?<=\\d)(?=[A-Za-z])", " ", size, perl = TRUE)) |>
+        dplyr::select(name, progress, date, time, seconds, size, format, warnings,
+                      dplyr::any_of(keep_cols))
+
+    } else prog_meta
+  )
+
 }
