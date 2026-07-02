@@ -62,7 +62,7 @@ write_tars <- function(tars
 
   if(package_dump) {
 
-    sessioninfo::package_info(pkgs = yaml::read_yaml("settings/packages.yaml") |> unlist() |> unname() |> unique()
+    sessioninfo::package_info(pkgs = yaml::read_yaml(package_yaml) |> unlist() |> unname() |> unique()
                               , include_base = TRUE
                               ) |>
       readr::write_csv(fs::path(store_dir, "package_info.csv"))
