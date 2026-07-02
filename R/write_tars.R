@@ -39,18 +39,33 @@ write_tars <- function(tars
 
   }
 
+  # save _targets.yaml
+  store_tars <- fs::path(store_dir, "_targets.yaml")
+
+  if(file.exists(store_tars)) {
+    unlink(store_tars) # remove existing file - doesn't care about permissions
+  }
+
   yaml::write_yaml(tars
-                   , fs::path(store_dir, "_targets.yaml")
+                   , store_tars
                    )
 
-  fs::file_chmod(fs::path(store_dir, "_targets.yaml"), mode = "775")
+  fs::file_chmod(store_tars, mode = "775")
 
+
+  # save scales.yaml
   if(file.exists(scales_yaml)) {
+
+    store_scales <- fs::path(store_dir, "scales.yaml")
+
+    if(file.exists(store_scales)) {
+      unlink(store_scales) # remove existing file - doesn't care about permissions
+    }
 
     fs::file_chmod(scales_yaml, mode = "775")
 
     fs::file_copy(scales_yaml
-                  , fs::path(store_dir, "scales.yaml")
+                  , store_scales
                   , overwrite = TRUE
                   )
 
@@ -62,12 +77,18 @@ write_tars <- function(tars
 
   if(package_dump) {
 
+    store_pkgs <- fs::path(store_dir, "package_info.csv")
+
+    if(file.exists(store_pkgs)) {
+      unlink(store_pkgs) # remove existing file - doesn't care about permissions
+    }
+
     sessioninfo::package_info(pkgs = yaml::read_yaml(package_yaml) |> unlist() |> unname() |> unique()
                               , include_base = TRUE
                               ) |>
-      readr::write_csv(fs::path(store_dir, "package_info.csv"))
+      readr::write_csv(store_pkgs)
 
-    fs::file_chmod(fs::path(store_dir, "package_info.csv"), mode = "775")
+    fs::file_chmod(store_pkgs, mode = "775")
 
   }
 
