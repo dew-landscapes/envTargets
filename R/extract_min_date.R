@@ -15,8 +15,11 @@ extract_min_date <- function(settings
                              , max_year = as.numeric(format(Sys.Date() - 365, "%Y"))
                              ) {
 
-  t_ext <- envFunc::find_name(settings, temporal_extent)
-  min_year <- max_year - readr::parse_number(t_ext)
-  paste0(min_year, "-01-01")
+  lifecycle::deprecate_warn("2026-07-03"
+                            , "envTargets::extract_min_date()"
+                            , "envFunc::extract_min_date()"
+                            )
+
+  envFunc::extract_min_date()
 
 }

@@ -9,28 +9,11 @@
 #' @examples
 extract_temporal_grain <- function(settings) {
 
-  index <- which(grepl("Y|M|D", settings))
+  lifecycle::deprecate_warn("2026-07-03"
+                            , "envTargets::extract_temporal_grain()"
+                            , "envFunc::extract_temporal_grain()"
+                            )
 
-  if(index) {
-
-    if(grepl("Y", settings[index])) {
-
-      "year"
-
-    } else if(grepl("M", settings[index])) {
-
-      "month"
-
-    } else if(grepl("D", settings[index])) {
-
-      "date"
-
-    }
-
-  } else {
-
-    stop("Need a simple time period within 'settings', e.g. 'P1Y' or 'P1M'")
-
-  }
+  envFunc::extract_temporal_grain()
 
 }
