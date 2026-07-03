@@ -55,7 +55,7 @@ predict_terra_tiles <- function(extent_df
       safe_rast <- purrr::safely(terra::rast)
 
       fails <- extent_df |>
-        dplyr::filter(purrr::map_lgl(extent_df$out_file, file.exists)) |>
+        dplyr::filter(purrr::map_lgl(out_file, file.exists)) |>
         dplyr::mutate(fails = purrr::map(out_file, safe_rast)
                       , fails = purrr::map_lgl(fails, \(x) !is.null(x$error))
                       ) |>
