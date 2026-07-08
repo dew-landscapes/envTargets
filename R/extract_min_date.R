@@ -10,16 +10,13 @@
 #' @export
 #'
 #' @examples
-extract_min_date <- function(settings
-                             , temporal_extent = "extent_time"
-                             , max_year = as.numeric(format(Sys.Date() - 365, "%Y"))
-                             ) {
+extract_min_date <- function(...) {
 
   lifecycle::deprecate_warn("2026-07-03"
                             , "envTargets::extract_min_date()"
                             , "envFunc::extract_min_date()"
                             )
 
-  envFunc::extract_min_date()
+  envFunc::extract_min_date(...)
 
 }

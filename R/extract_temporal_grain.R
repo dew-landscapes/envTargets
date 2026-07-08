@@ -7,13 +7,13 @@
 #' @export
 #'
 #' @examples
-extract_temporal_grain <- function(settings) {
+extract_temporal_grain <- function(...) {
 
   lifecycle::deprecate_warn("2026-07-03"
                             , "envTargets::extract_temporal_grain()"
                             , "envFunc::extract_temporal_grain()"
                             )
 
-  envFunc::extract_temporal_grain()
+  envFunc::extract_temporal_grain(...)
 
 }
