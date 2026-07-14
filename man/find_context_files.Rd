@@ -24,7 +24,7 @@ non-varied context settings.}
 are the settings and the rows are each combination of different values for each setting, e.g. as produced by
 envTargets::make_context_combos.}
 
-\item{track_file}{Name of file with extension to use for tracking if a store relating to a context combo has been
+\item{track_file}{Name of file(s) with extension to use for tracking if a store relating to a context combo has been
 run. Usually one of the last files created in the project/store, and or one used downstream.
 If in a store/folder below the lowest context specified in \code{combos_df}, then include
 the store path with the file, e.g. "reg_cont/objects/reg_cont_tbl_tidy".}
@@ -36,7 +36,7 @@ and don't have a \code{track_file}?}
 }
 \value{
 Data frame with extent_time, rank, filt_level, path, exists and combo columns,
-with each row representing a combination of the extent_time, taxonomic & filt_level inputs.
+with each row representing a combination of the track_file, extent_time, taxonomic & filt_level inputs.
 }
 \description{
 Find context files based on settings combos in a data frame

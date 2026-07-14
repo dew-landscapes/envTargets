@@ -4,7 +4,7 @@
 \alias{extract_temporal_grain}
 \title{Get the temporal grain from settings}
 \usage{
-extract_temporal_grain(settings)
+extract_temporal_grain(...)
 }
 \arguments{
 \item{settings}{list. usually from

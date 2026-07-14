@@ -4,11 +4,7 @@
 \alias{extract_min_date}
 \title{Extract a minimum date to use in the project, based on the settings}
 \usage{
-extract_min_date(
-  settings,
-  temporal_extent = "extent_time",
-  max_year = as.numeric(format(Sys.Date() - 365, "\%Y"))
-)
+extract_min_date(...)
 }
 \arguments{
 \item{settings}{list. usually from yaml::read_yaml("settings/setup.yaml")}
