@@ -7,7 +7,7 @@
 #' @param combos_df Data frame of settings context combinations for all the settings contexts, where the columns
 #' are the settings and the rows are each combination of different values for each setting, e.g. as produced by
 #' envTargets::make_context_combos.
-#' @param track_file Name of file with extension to use for tracking if a store relating to a context combo has been
+#' @param track_file Name of file(s) with extension to use for tracking if a store relating to a context combo has been
 #' run. Usually one of the last files created in the project/store, and or one used downstream.
 #' If in a store/folder below the lowest context specified in `combos_df`, then include
 #' the store path with the file, e.g. "reg_cont/objects/reg_cont_tbl_tidy".
@@ -16,7 +16,7 @@
 #' @param store_base Path to base directory of project store, e.g. "../../out"  or "/projects/data".
 #'
 #' @return Data frame with extent_time, rank, filt_level, path, exists and combo columns,
-#' with each row representing a combination of the extent_time, taxonomic & filt_level inputs.
+#' with each row representing a combination of the track_file, extent_time, taxonomic & filt_level inputs.
 #'
 #' @export
 #'
@@ -77,7 +77,9 @@ find_context_files <- function(project = basename(here::here())
   }
   ) |>
     dplyr::bind_rows() |>
-    dplyr::mutate(file = fs::path(path, track_file)
+    dplyr::mutate(file = list(track_file)) |>
+    tidyr::unnest(file) |>
+    dplyr::mutate(file = fs::path(path, file)
                   , exists = file.exists(file)
     )
 
