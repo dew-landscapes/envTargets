@@ -1,21 +1,18 @@
 #' Write _output.yaml for html and docx reports
 #'
-#' Use the resulting file paths within [`envTargets::render_with_deps()`] `output_yaml` argument, which is passed through to `[rmarkdown::render()]`
+#' To select output format, use `output_format = "bookdown::bs4_book"` / `"bookdown::word_document2"` in [`envTargets::render_with_deps()`].
 #'
-#' @param output_html_file,output_docx_file Paths where yaml files will be saved. Set to NULL to not create a format's file.
-#'
-#' @returns File paths to where output yamls and style file are written.
+#' @returns File paths (relative) to _output.yaml and style file (for bs4_book output).
 #' @export
 #'
 #' @examples
-prepare_output_yamls <- function(output_html_file = fs::path("report", "_output_html.yaml"),
-                                 output_docx_file = fs::path("report", "_output_docx.yaml")
-) {
+prepare_output_yamls <- function() {
 
   if(grepl("\\/dev\\/", here::here())) {
 
-    # HTML
-    style_file <- gsub(basename(output_html_file), "style.css", output_html_file)
+    output_yaml_file <- fs::path("report", "_output.yaml")
+
+    style_file <- fs::path("report", "style.css")
 
     writeLines('body::before {
       content: "DRAFT";
@@ -31,30 +28,20 @@ prepare_output_yamls <- function(output_html_file = fs::path("report", "_output_
                , style_file
     )
 
-    if(!is.null(output_html_file)) {
-      writeLines('bookdown::bs4_book:
-      css: style.css
-              '
-                 , output_html_file
-      )
-    }
 
-    # Word
-    docx_settings <- list(
-      `bookdown::word_document2` = list(
-        toc = FALSE,
-        reference_docx = system.file("Styles.dotx", package = "envReport"),
-        fig_caption = TRUE
-      )
+    yaml::write_yaml(
+      list(
+        `bookdown::bs4_book` = list(css = "style.css"),
+        `bookdown::word_document2` = list(toc = FALSE,
+                                          reference_docx = system.file("Styles.dotx", package = "envReport"),
+                                          fig_caption = TRUE
+        )
+      ),
+      output_yaml_file
     )
 
-    if(!is.null(output_docx_file)) {
-      yaml::write_yaml(docx_settings, output_docx_file)
-    }
 
-
-
-    return(c(style_file, output_html_file, output_docx_file))
+    return(c(style_file, output_yaml_file))
 
   } else {
 

@@ -4,17 +4,11 @@
 \alias{prepare_output_yamls}
 \title{Write _output.yaml for html and docx reports}
 \usage{
-prepare_output_yamls(
-  output_html_file = fs::path("report", "_output_html.yaml"),
-  output_docx_file = fs::path("report", "_output_docx.yaml")
-)
-}
-\arguments{
-\item{output_html_file, output_docx_file}{Paths where yaml files will be saved. Set to NULL to not create a format's file.}
+prepare_output_yamls()
 }
 \value{
-File paths to where output yamls and style file are written.
+File paths (relative) to _output.yaml and style file (for bs4_book output).
 }
 \description{
-Use the resulting file paths within \code{\link[=render_with_deps]{render_with_deps()}} \code{output_yaml} argument, which is passed through to \verb{[rmarkdown::render()]}
+To select output format, use \code{output_format = "bookdown::bs4_book"} / \code{"bookdown::word_document2"} in \code{\link[=render_with_deps]{render_with_deps()}}.
 }
