@@ -435,7 +435,7 @@ raster window (via `terra::window()`).
 | `envTargets::parse_store_metadata()` | function | Parse metadata in the file path of a (env) targets store |
 | `envTargets::predict_terra_tiles()` | function | Predict a model across tiles |
 | `envTargets::prepare_bookdown_yaml()` | function | Prepare \_bookdown.yaml within a targets workflow |
-| `envTargets::prepare_output_yamls()` | function | Write \_output.yaml for html and docx reports |
+| `envTargets::prepare_output_yaml()` | function | Write \_output.yaml for html and docx reports |
 | `envTargets::render_with_deps()` | function | Render bookdown and force Rmd file dependencies |
 | `envTargets::run_all()` | function | Run all targets stores for multiple settings contexts |
 | `envTargets::sdm_progress()` | function | Check completion of an envSDMs run |

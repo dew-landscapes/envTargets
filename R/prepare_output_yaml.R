@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-prepare_output_yamls <- function() {
+prepare_output_yaml <- function() {
 
   if(grepl("\\/dev\\/", here::here())) {
 
