@@ -8,6 +8,7 @@ predict_terra_tiles(
   extent_df,
   predict_stack,
   model,
+  model_read_fun = readRDS,
   terra_options = NULL,
   out_dir,
   force_new = TRUE,
@@ -22,6 +23,9 @@ predict_terra_tiles(
 \item{predict_stack}{SpatRaster, possibly from \code{make_env_stack()}.}
 
 \item{model}{Either model object, or path to model, with a predict method.}
+
+\item{model_read_fun}{If \code{model} is a path, what function to use to read the
+model. Defaults to \code{readRDS()}.}
 
 \item{terra_options}{List of options to be passed to \code{terra::terraOptions()}.
 e.g. \code{list(memfrac = 0.5)}.}
