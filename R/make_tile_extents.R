@@ -103,7 +103,7 @@ make_tile_extents <- function(base_grid_path
 
   # tiles tibble --------
   tiles <- extents |>
-    tibble::as_tibble() %>%
+    tibble::as_tibble() |>
     dplyr::mutate(tile_name = paste0(tile_name
                                      , stringr::str_pad(dplyr::row_number()
                                                         , width = tile_power
