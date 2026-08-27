@@ -36,82 +36,95 @@ predict_terra_tiles <- function(extent_df
                                 , ...
                                 ) {
 
-  if(!is.null(load_packages)) {
+  # catch any NULL extent_df and pass through without predicting
+  if(grepl("tile_name", names(extent_df))) {
 
-    envFunc::check_packages(load_packages
-                            , lib = TRUE
-                            )
+    if(!is.null(load_packages)) {
 
-  }
+      envFunc::check_packages(load_packages
+                              , lib = TRUE
+                              )
 
-  extent_df <- extent_df |>
-    dplyr::mutate(out_file = fs::path(out_dir
-                                      , paste0(tile_name, ".tif")
-                                      )
-                  )
+    }
 
-  # check if tifs are openable (and delete them if not) before making 'to_do'
-  if(all(check_tifs, isFALSE(force_new))) {
+    extent_df <- extent_df |>
+      dplyr::mutate(out_file = fs::path(out_dir
+                                        , paste0(tile_name, ".tif")
+                                        )
+                    )
 
-    if(any(purrr::map_lgl(extent_df$out_file, file.exists))) {
+    # check if tifs are openable (and delete them if not) before making 'to_do'
+    if(all(check_tifs, isFALSE(force_new))) {
 
-      safe_rast <- purrr::safely(terra::rast)
+      if(any(purrr::map_lgl(extent_df$out_file, file.exists))) {
 
-      fails <- extent_df |>
-        dplyr::filter(purrr::map_lgl(out_file, file.exists)) |>
-        dplyr::mutate(fails = purrr::map(out_file, safe_rast)
-                      , fails = purrr::map_lgl(fails, \(x) !is.null(x$error))
-                      ) |>
-        dplyr::filter(fails)
+        safe_rast <- purrr::safely(terra::rast)
 
-      if(nrow(fails)) {
+        fails <- extent_df |>
+          dplyr::filter(purrr::map_lgl(out_file, file.exists)) |>
+          dplyr::mutate(fails = purrr::map(out_file, safe_rast)
+                        , fails = purrr::map_lgl(fails, \(x) !is.null(x$error))
+                        ) |>
+          dplyr::filter(fails)
 
-        fs::file_delete(fails$out_file)
+        if(nrow(fails)) {
+
+          fs::file_delete(fails$out_file)
+
+        }
 
       }
 
     }
 
-  }
+    extent_df <- extent_df |>
+      # the file is 'to_do' if: it doesn't exist; or 'force_new' is TRUE
+      dplyr::mutate(to_do = any(!file.exists(out_file)
+                                , force_new
+                                )
+                    )
 
-  extent_df <- extent_df |>
-    # the file is 'to_do' if: it doesn't exist; or 'force_new' is TRUE
-    dplyr::mutate(to_do = any(!file.exists(out_file)
-                              , force_new
-                              )
+    if(sum(extent_df$to_do) > 0) {
+
+      fs::dir_create(dirname(extent_df$out_file[[1]]))
+
+      ## terra options -------
+      if(!is.null(terra_options)) {
+
+        do.call(terra::terraOptions
+                , args = terra_options
+                )
+
+      }
+
+      if(is.character(model)) model <- model_read_fun(model)
+
+      purrr::walk(1:nrow(extent_df)
+                  , \(x) {
+
+                    terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
+
+                    terra::predict(object = predict_stack
+                                   , model = model
+                                   , filename = extent_df$out_file[[x]]
+                                   , ...
+                                   )
+
+                  }
                   )
-
-  if(sum(extent_df$to_do) > 0) {
-
-    fs::dir_create(dirname(extent_df$out_file[[1]]))
-
-    ## terra options -------
-    if(!is.null(terra_options)) {
-
-      do.call(terra::terraOptions
-              , args = terra_options
-              )
 
     }
 
-    if(is.character(model)) model <- model_read_fun(model)
+    result <- extent_df$out_file
 
-    purrr::walk(1:nrow(extent_df)
-                , \(x) {
+  } else {
 
-                  terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
+    message("no tiles supplied so no predict returned")
 
-                  terra::predict(object = predict_stack
-                                 , model = model
-                                 , filename = extent_df$out_file[[x]]
-                                 , ...
-                                 )
-
-                }
-                )
+    result <- character(0)
 
   }
 
-  return(extent_df$out_file)
+  return(result)
 
 }
