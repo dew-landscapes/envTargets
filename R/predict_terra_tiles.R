@@ -37,7 +37,7 @@ predict_terra_tiles <- function(extent_df
                                 ) {
 
   # catch any NULL extent_df and pass through without predicting
-  if(grepl("tile_name", names(extent_df))) {
+  if("tile_name" %in% names(extent_df)) {
 
     if(!is.null(load_packages)) {
 
