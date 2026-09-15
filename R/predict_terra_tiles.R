@@ -1,7 +1,7 @@
 #' Predict a model across tiles
 #'
 #' @param extent_df Tibble from `make_tile_extents()`.
-#' @param predict_stack SpatRaster, possibly from `make_env_stack()`.
+#' @param predictors Character. Paths to predictor rasters.
 #' @param model Either model object, or path to model, with a predict method.
 #' @param model_read_fun If `model` is a path, what function to use to read the
 #' model. Defaults to `readRDS()`.
@@ -25,7 +25,7 @@
 #'
 #' @examples
 predict_terra_tiles <- function(extent_df
-                                , predict_stack
+                                , predictors
                                 , model
                                 , model_read_fun = readRDS
                                 , terra_options = NULL
@@ -101,6 +101,8 @@ predict_terra_tiles <- function(extent_df
 
       purrr::walk(1:nrow(extent_df)
                   , \(x) {
+
+                    predict_stack <- envRaster::make_env_stack(predictors = predictors)
 
                     terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
 
