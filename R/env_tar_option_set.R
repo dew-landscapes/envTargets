@@ -18,7 +18,7 @@ env_tar_option_set <- function(script
                                , tars = yaml::read_yaml("_targets.yaml")
                                , logs = TRUE
                                , metrics = FALSE
-                               , controller_local_args = list(workers = envFunc::use_cores(absolute_max = yaml::read_yaml("settings/setup.yaml")$max_cores)
+                               , controller_local_args = list(workers = envFunc::use_cores(absolute_max = yaml::read_yaml("settings/cores.yaml")$max_cores)
                                                               , name = "main_controller"
                                                               , crashes_max = 1L
                                                               )
