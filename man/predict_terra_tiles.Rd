@@ -6,7 +6,7 @@
 \usage{
 predict_terra_tiles(
   extent_df,
-  predict_stack,
+  predictors,
   model,
   model_read_fun = readRDS,
   terra_options = NULL,
@@ -20,7 +20,7 @@ predict_terra_tiles(
 \arguments{
 \item{extent_df}{Tibble from \code{make_tile_extents()}.}
 
-\item{predict_stack}{SpatRaster, possibly from \code{make_env_stack()}.}
+\item{predictors}{Character. Paths to predictor rasters.}
 
 \item{model}{Either model object, or path to model, with a predict method.}
 
