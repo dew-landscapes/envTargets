@@ -2,7 +2,8 @@
 #'
 #' Checks for the existence of files in relevant taxa's output directories (or reads the 'boundary' target).
 #'
-#' @param sdm_store File path to sdm store
+#' @param sdm_store File path to sdm store. Used to read `toi`, if `taxa` argument is null.
+#' @param pred_dir File path to where outputs (not targets) are stored. Used to check for the existence of relevant files.
 #' @param grain "fine" or "coarse" - which output directory to search
 #' @param find_progress Which files to check for
 #' @param expected Logical; Count the number of records for each taxa to see if they are expected to produce an SDM (e.g. n records >6). Uses bio_geo_range for data.
@@ -15,6 +16,7 @@
 
 sdm_progress <- function(sdm_store = tars$sdm$store,
                          grain = "fine",
+                         pred_dir,
                          find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh", "reproject"),
                          expected = FALSE,
                          return_log = FALSE,
@@ -22,51 +24,65 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
 
   if(length(grain) > 1 || !grain %in% c("coarse", "fine")) stop("'grain' must be *one* of 'coarse' or 'fine'")
 
+  if(any(!grepl(grain, pred_dir))) stop("pred_dir (.../", basename(pred_dir), ") does not match grain ('", grain, "')")
+
   toi <- tibble::tibble(
     toi = if(is.null(taxa)) {
       targets::tar_read(toi, store = gsub("sdm", "setup", sdm_store))
     } else taxa
-  )
+  ) |>
+    dplyr::mutate(tar_id = make_tar_id(toi))
 
-  pred_dir <- fs::path(sdm_store, paste0("sdm_", grain))
   if(!is.null(taxa)) {
     pred_dir <- fs::dir_ls(pred_dir, regexp = paste(stringr::str_escape(taxa), collapse = "|"))
   }
 
-  files <- purrr::map(find_progress,
-             \(x) {
+  files <- purrr::set_names(find_progress) |>
+    purrr::map(\(x) {
 
-               if(x == "boundary") {
-                 tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                                 pattern = "boundary.parquet",
-                                                 full.names = TRUE) |>
-                                  dirname() |> basename(),
-                                boundary = TRUE)
+      df <- if(x == "boundary") {
+        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
+                                        pattern = "boundary.parquet",
+                                        full.names = TRUE) |>
+                         dirname() |> basename(),
+                       boundary = TRUE) |>
+          dplyr::mutate(tar_id = make_tar_id(toi))
 
-               } else if(x %in% c("prep", "tune", "full_run")) {
-                 tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                                 pattern = paste0(x, "\\.rds$"),
-                                                 full.names = TRUE) |>
-                                  dirname() |> basename(),
-                                !!rlang::ensym(x) := TRUE)
+      } else if(x %in% c("prep", "tune", "full_run")) {
+        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
+                                        pattern = paste0(x, "\\.rds$"),
+                                        full.names = TRUE) |>
+                         dirname() |> basename(),
+                       !!rlang::ensym(x) := TRUE) |>
+          dplyr::mutate(tar_id = make_tar_id(toi))
 
-               } else if(x %in% c("pred", "thresh")) {
-                 tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                                 pattern = paste0(".*__", x, "__.*\\.tif$"),
-                                                 full.names = TRUE) |>
-                                  basename() |>
-                                  gsub(paste0("__", x, ".*"), "\\1", x=_),
-                                !!rlang::ensym(x) := TRUE)
 
-               } else if(x == "reproject") {
-                 tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                                 pattern = ".*__thresh_[0-9]{4}.*\\.tif$",
-                                                 full.names = TRUE) |>
-                                  basename() |>
-                                  gsub("__thresh.*", "\\1", x=_),
-                                reproject = TRUE)
-               }
-             }) |>
+      } else if(x %in% c("pred", "thresh")) {
+        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
+                                        pattern = paste0(".*__", x, "__.*\\.tif$"),
+                                        full.names = TRUE) |>
+                         basename() |>
+                         gsub(paste0("__", x, ".*"), "\\1", x=_),
+                       !!rlang::ensym(x) := TRUE) |>
+          dplyr::mutate(tar_id = make_tar_id(toi))
+
+      } else if(x == "reproject") {
+        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
+                                        pattern = ".*__thresh_[0-9]{4}.*\\.tif$",
+                                        full.names = TRUE) |>
+                         basename() |>
+                         gsub("__thresh.*", "\\1", x=_),
+                       reproject = TRUE) |>
+          dplyr::mutate(tar_id = make_tar_id(toi))
+      }
+
+      if(all(df$toi == df$tar_id)) {
+        df |>
+          dplyr::select(-toi) |>
+          dplyr::left_join(toi)
+      } else df
+
+    }) |>
     purrr::compact()
 
 
@@ -80,7 +96,8 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
                   finished = TRUE,
                   abandoned = grepl("abandoned", paste(log, collapse="\n")),
                   errored = grepl("Error", paste(log, collapse="\n"))) |>
-    dplyr::select(-logfile)
+    dplyr::select(-logfile) |>
+    dplyr::mutate(tar_id = make_tar_id(toi))
 
   if(!return_log) {
     files$finished <- files$finished |>

@@ -7,6 +7,7 @@
 sdm_progress(
   sdm_store = tars$sdm$store,
   grain = "fine",
+  pred_dir,
   find_progress = c("boundary", "prep", "tune", "full_run", "pred", "thresh",
     "reproject"),
   expected = FALSE,
@@ -15,9 +16,11 @@ sdm_progress(
 )
 }
 \arguments{
-\item{sdm_store}{File path to sdm store}
+\item{sdm_store}{File path to sdm store. Used to read \code{toi}, if \code{taxa} argument is null.}
 
 \item{grain}{"fine" or "coarse" - which output directory to search}
+
+\item{pred_dir}{File path to where outputs (not targets) are stored. Used to check for the existence of relevant files.}
 
 \item{find_progress}{Which files to check for}
 
