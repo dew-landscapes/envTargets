@@ -33,43 +33,53 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
   ) |>
     dplyr::mutate(tar_id = make_tar_id(toi))
 
-  if(!is.null(taxa)) {
-    pred_dir <- fs::dir_ls(pred_dir, regexp = paste(stringr::str_escape(taxa), collapse = "|"))
-  }
+  check_dirs <- if(!is.null(taxa)) {
+    fs::dir_ls(pred_dir, regexp = paste(stringr::str_escape(taxa),
+                                        stringr::str_escape(make_tar_id(taxa)),
+                                        sep = "|",
+                                        collapse = "|"))
+  } else pred_dir
+
+  check_dirs <- c(check_dirs, fs::dir_ls(check_dirs, type = "dir", recurse = TRUE)) |> unname()
+  check_dirs <- check_dirs[!grepl("tiles", check_dirs)]
 
   files <- purrr::set_names(find_progress) |>
     purrr::map(\(x) {
 
       df <- if(x == "boundary") {
-        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                        pattern = "boundary.parquet",
-                                        full.names = TRUE) |>
+        tibble::tibble(toi = fs::dir_ls(check_dirs,
+                                        recurse = FALSE,
+                                        type = "file",
+                                        regexp = "boundary.parquet") |>
                          dirname() |> basename(),
                        boundary = TRUE) |>
           dplyr::mutate(tar_id = make_tar_id(toi))
 
       } else if(x %in% c("prep", "tune", "full_run")) {
-        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                        pattern = paste0(x, "\\.rds$"),
-                                        full.names = TRUE) |>
+        tibble::tibble(toi = fs::dir_ls(check_dirs,
+                                        recurse = FALSE,
+                                        type = "file",
+                                        regexp = paste0(x, "\\.rds$")) |>
                          dirname() |> basename(),
                        !!rlang::ensym(x) := TRUE) |>
           dplyr::mutate(tar_id = make_tar_id(toi))
 
 
       } else if(x %in% c("pred", "thresh")) {
-        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                        pattern = paste0(".*__", x, "__.*\\.tif$"),
-                                        full.names = TRUE) |>
+        tibble::tibble(toi = fs::dir_ls(check_dirs,
+                                        recurse = FALSE,
+                                        type = "file",
+                                        regexp = paste0(".*__", x, "__.*\\.tif$")) |>
                          basename() |>
                          gsub(paste0("__", x, ".*"), "\\1", x=_),
                        !!rlang::ensym(x) := TRUE) |>
           dplyr::mutate(tar_id = make_tar_id(toi))
 
       } else if(x == "reproject") {
-        tibble::tibble(toi = list.files(pred_dir, recursive = TRUE,
-                                        pattern = ".*__thresh_[0-9]{4}.*\\.tif$",
-                                        full.names = TRUE) |>
+        tibble::tibble(toi = fs::dir_ls(check_dirs,
+                                        recurse = FALSE,
+                                        type = "file",
+                                        pattern = ".*__thresh_[0-9]{4}.*\\.tif$") |>
                          basename() |>
                          gsub("__thresh.*", "\\1", x=_),
                        reproject = TRUE) |>
@@ -86,11 +96,12 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
     purrr::compact()
 
 
-  files[["finished"]] <- tibble::tibble(logfile = list.files(pred_dir, recursive = TRUE,
-                                                  pattern = paste0(".*__pred.*\\.log$"),
-                                                  full.names = TRUE)) |>
+  files[["finished"]] <- tibble::tibble(logfile = fs::dir_ls(check_dirs,
+                                                             recurse = FALSE,
+                                                             type = "file",
+                                                             regexp = ".*__thresh.*\\.log$")) |>
     dplyr::rowwise() |>
-    dplyr::mutate(toi = gsub(paste0("__pred.*"), "\\1", logfile) |>
+    dplyr::mutate(toi = gsub(paste0("__thresh.*"), "\\1", logfile) |>
                     basename(),
                   log = list(readr::read_lines(logfile)),
                   finished = TRUE,
