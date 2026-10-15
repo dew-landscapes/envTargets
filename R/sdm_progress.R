@@ -34,10 +34,12 @@ sdm_progress <- function(sdm_store = tars$sdm$store,
     dplyr::mutate(tar_id = make_tar_id(toi))
 
   check_dirs <- if(!is.null(taxa)) {
-    fs::dir_ls(pred_dir, regexp = paste(stringr::str_escape(taxa),
-                                        stringr::str_escape(make_tar_id(taxa)),
-                                        sep = "|",
-                                        collapse = "|"))
+    fs::dir_ls(pred_dir,
+               type = "dir",
+               regexp = paste(stringr::str_escape(taxa),
+                              stringr::str_escape(make_tar_id(taxa)),
+                              sep = "|",
+                              collapse = "|"))
   } else pred_dir
 
   check_dirs <- c(check_dirs, fs::dir_ls(check_dirs, type = "dir", recurse = TRUE)) |> unname()
