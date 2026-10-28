@@ -20,7 +20,6 @@ env_tar_option_set <- function(script
                                , metrics = FALSE
                                , controller_local_args = list(workers = envFunc::use_cores(absolute_max = yaml::read_yaml("settings/cores.yaml")$max_cores)
                                                               , name = "main_controller"
-                                                              , crashes_max = 1L
                                                               )
                                , tar_option_set_args = list(packages = yaml::read_yaml("settings/packages.yaml")[[script]]
                                                             , controller = get(controller_local_args$name)
