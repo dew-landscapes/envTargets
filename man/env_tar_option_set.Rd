@@ -10,10 +10,11 @@ env_tar_option_set(
   logs = TRUE,
   metrics = FALSE,
   controller_local_args = list(workers = envFunc::use_cores(absolute_max =
-    yaml::read_yaml("settings/cores.yaml")$max_cores), name = "main_controller"),
+    yaml::read_yaml("settings/cores.yaml")$max_cores), name = "controller_main"),
   tar_option_set_args = list(packages =
     yaml::read_yaml("settings/packages.yaml")[[script]], controller =
-    get(controller_local_args$name))
+    get(controller_local_args$name)),
+  add_x_task_controller = 0
 )
 }
 \arguments{
@@ -25,10 +26,20 @@ env_tar_option_set(
 
 \item{controller_local_args}{Named list of \code{crew::controller()} arguments}
 
+\item{add_x_task_controller}{Numeric. If >0 a secondary controller with
+the same arguments as \code{controller_local_args} will be established with the
+exception that \code{tasks_max = x} is specified. Particularly useful for a target
+that will run many terra tasks that can fill temporary space if the workers
+remain active for the life of the script. To use the x task controller,
+specify
+\verb{resources = tar_resources(crew = tar_resources_crew(controller = "controller_x_task")}
+(where x is literally 'x', not the numeric value you assigned) within the
+arguments for any target.}
+
 \item{tar_options_set_args}{Named list of \code{crew::controller()} arguments}
 }
 \value{
-Sets options for a targets workflow
+invisible(NULL). Sets options for a targets workflow
 }
 \description{
 Optionally enable logging and metric
