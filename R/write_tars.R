@@ -14,7 +14,7 @@
 #' @param scales_yaml Path to yaml file containing 'scales' (e.g. extent, grain
 #' and possibly area-of-interest (aoi)).
 #'
-#' @return `NULL`. Two `_targets.yaml` and one `scales_yaml` files written.
+#' @return `NULL`. Two `_targets.yaml` and one `scales.yaml` files written.
 #' Optionally, `package_info.csv` written.
 #' @export
 #'
