@@ -24,7 +24,7 @@ scripts.}
 and possibly area-of-interest (aoi)).}
 }
 \value{
-\code{NULL}. Two \verb{_targets.yaml} and one \code{scales_yaml} files written.
+\code{NULL}. Two \verb{_targets.yaml} and one \code{scales.yaml} files written.
 Optionally, \code{package_info.csv} written.
 }
 \description{
