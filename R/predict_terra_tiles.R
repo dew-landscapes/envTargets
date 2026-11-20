@@ -54,7 +54,7 @@ predict_terra_tiles <- function(extent_df
                     )
 
     # check if tifs are openable (and delete them if not) before making 'to_do'
-    if(all(check_tifs, isFALSE(force_new))) {
+    if(check_tifs) {
 
       if(any(purrr::map_lgl(extent_df$out_file, file.exists))) {
 
