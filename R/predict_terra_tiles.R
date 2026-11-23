@@ -106,11 +106,22 @@ predict_terra_tiles <- function(extent_df
 
                     terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
 
+                    use_temp_file <- tempfile(fileext = "tif")
+
+                    on.exit(unlink(use_temp_file)
+                            , add = TRUE
+                            )
+
                     terra::predict(object = predict_stack
                                    , model = model
-                                   , filename = extent_df$out_file[[x]]
+                                   , filename = use_temp_file
                                    , ...
                                    )
+
+                    fs::file_copy(use_temp_file
+                                  , extent_df$out_file[[x]]
+                                  , overwrite = TRUE
+                                  )
 
                   }
                   )
