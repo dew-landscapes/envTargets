@@ -106,7 +106,7 @@ predict_terra_tiles <- function(extent_df
 
                     terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
 
-                    use_temp_file <- tempfile(fileext = "tif")
+                    use_temp_file <- tempfile(fileext = ".tif")
 
                     on.exit(unlink(use_temp_file)
                             , add = TRUE
