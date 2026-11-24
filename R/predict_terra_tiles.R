@@ -7,6 +7,8 @@
 #' model. Defaults to `readRDS()`.
 #' @param terra_options List of options to be passed to `terra::terraOptions()`.
 #' e.g. `list(memfrac = 0.5)`.
+#' @param terra_gdal_options Character. Vector of name value pairs to pass to
+#' `terra::setGDALconfig()`.
 #' @param out_dir Character. Name of directory into which predicted tiles will
 #' be saved.
 #' @param force_new Logical. If TRUE, predict tile even if it already exists.
@@ -29,6 +31,7 @@ predict_terra_tiles <- function(extent_df
                                 , model
                                 , model_read_fun = readRDS
                                 , terra_options = NULL
+                                , terra_gdal_options = NULL
                                 , out_dir
                                 , force_new = TRUE
                                 , load_packages = NULL
@@ -94,6 +97,13 @@ predict_terra_tiles <- function(extent_df
         do.call(terra::terraOptions
                 , args = terra_options
                 )
+
+      }
+
+      ## terra gdal options -------
+      if(!is.null(terra_gdal_options)) {
+
+        terra::setGDALconfig(option = terra_gdal_options)
 
       }
 
