@@ -18,6 +18,8 @@
 #' will be made to open any existing tile. If that fails, the tail will be
 #' deleted. While expensive in time, this ensures that any crashes that result
 #' in incomplete tiles are fixed.
+#' @param predict_retries Numeric. The number of attempts to make at predicting.
+#' Can be useful to overcome intermittent `[extract] cannot read values` errors.
 #' @param ... Passed to `terra::predict()`. Object, model and filename arguments
 #' are already passed so are not needed here. e.g. `na.rm = TRUE`;
 #' `overwrite = TRUE`; or `wopt = list(datatype = "INT1U")`
@@ -36,6 +38,7 @@ predict_terra_tiles <- function(extent_df
                                 , force_new = TRUE
                                 , load_packages = NULL
                                 , check_tifs = TRUE
+                                , predict_retries = 5
                                 , ...
                                 ) {
 
@@ -109,31 +112,108 @@ predict_terra_tiles <- function(extent_df
 
       if(is.character(model)) model <- model_read_fun(model)
 
+      predict_retry <- function(predictors
+                                , extent_df
+                                , row
+                                , model
+                                , ...
+                                , tries
+                                , delay = 3
+                                , bad_warning = "GDAL Error|I/O error|error reading|cannot read"
+                                ) {
+
+        last_err <- NULL
+
+        for (i in seq_len(tries)) {
+
+          bad <- character()
+
+          res <- tryCatch({
+
+            # fresh SpatRaster (and so fresh file handles) on every attempt
+            predict_stack <- envRaster::make_env_stack(predictors = predictors)
+
+            terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[row, 1:4]))
+
+            use_temp_file <- tempfile(fileext = ".tif")
+
+            on.exit(unlink(use_temp_file)
+                    , add = TRUE
+                    )
+
+            out <- withCallingHandlers(
+
+              terra::predict(object = predict_stack
+                             , model = model
+                             , filename = use_temp_file
+                             , ...
+                             )
+
+              , warning = function(w) {
+
+                # only intercept the I/O-type warnings; others pass through as normal
+                if (grepl(bad_warning, conditionMessage(w))) {
+
+                  bad <<- c(bad, conditionMessage(w))
+
+                  invokeRestart("muffleWarning")
+
+                }
+              }
+            )
+
+            if (length(bad)) stop(paste(unique(bad), collapse = " | "))
+
+            # verify the output: it exists, opens, and its last row can be read
+            stopifnot(file.exists(use_temp_file), file.size(use_temp_file) > 0)
+            chk <- terra::rast(use_temp_file)
+            invisible(terra::values(chk, row = terra::nrow(chk), nrows = 1))
+
+            fs::file_copy(use_temp_file
+                          , extent_df$out_file[[row]]
+                          , overwrite = TRUE
+                          )
+
+            return(extent_df$out_file[[row]])
+
+          }
+
+          , error = function(e) e
+          )
+
+          if (!inherits(res, "error")) return(res)
+
+          last_err <- res
+
+          if (i < tries) Sys.sleep(delay * i)
+
+        }
+
+        stop("predict failed after "
+             , tries
+             , " tries: "
+             , extent_df$out_file[[row]]
+             , "\n"
+             , "Last error: "
+             , conditionMessage(last_err)
+             , call. = FALSE
+             )
+
+      }
+
       purrr::walk(1:nrow(extent_df)
                   , \(x) {
 
-                    predict_stack <- envRaster::make_env_stack(predictors = predictors)
-
-                    terra::window(predict_stack) <- terra::ext(as.numeric(extent_df[x, 1:4]))
-
-                    use_temp_file <- tempfile(fileext = ".tif")
-
-                    on.exit(unlink(use_temp_file)
-                            , add = TRUE
-                            )
-
-                    terra::predict(object = predict_stack
-                                   , model = model
-                                   , filename = use_temp_file
-                                   , ...
-                                   )
-
-                    fs::file_copy(use_temp_file
-                                  , extent_df$out_file[[x]]
-                                  , overwrite = TRUE
+                    predict_retry(predictors = predictors
+                                  , extent_df = extent_df
+                                  , model = model
+                                  , row = x
+                                  , ...
+                                  , tries = predict_retries
+                                  , delay = 3
+                                  , bad_warning = "GDAL Error|I/O error|error reading|cannot read"
                                   )
-
-                  }
+                    }
                   )
 
     }
