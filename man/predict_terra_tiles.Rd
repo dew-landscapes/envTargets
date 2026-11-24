@@ -10,6 +10,7 @@ predict_terra_tiles(
   model,
   model_read_fun = readRDS,
   terra_options = NULL,
+  terra_gdal_options = NULL,
   out_dir,
   force_new = TRUE,
   load_packages = NULL,
@@ -29,6 +30,9 @@ model. Defaults to \code{readRDS()}.}
 
 \item{terra_options}{List of options to be passed to \code{terra::terraOptions()}.
 e.g. \code{list(memfrac = 0.5)}.}
+
+\item{terra_gdal_options}{Character. Vector of name value pairs to pass to
+\code{terra::setGDALconfig()}.}
 
 \item{out_dir}{Character. Name of directory into which predicted tiles will
 be saved.}
