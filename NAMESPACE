@@ -3,6 +3,7 @@
 export(collect_clean_objects)
 export(collect_values)
 export(combine_tiles)
+export(config)
 export(env_tar_group)
 export(env_tar_option_set)
 export(extract_min_date)
