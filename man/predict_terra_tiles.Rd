@@ -15,6 +15,7 @@ predict_terra_tiles(
   force_new = TRUE,
   load_packages = NULL,
   check_tifs = TRUE,
+  predict_retries = 5,
   ...
 )
 }
@@ -46,6 +47,9 @@ Leave as \code{TRUE} to let targets decide if the tile needs to be rewritten.}
 will be made to open any existing tile. If that fails, the tail will be
 deleted. While expensive in time, this ensures that any crashes that result
 in incomplete tiles are fixed.}
+
+\item{predict_retries}{Numeric. The number of attempts to make at predicting.
+Can be useful to overcome intermittent \verb{[extract] cannot read values} errors.}
 
 \item{...}{Passed to \code{terra::predict()}. Object, model and filename arguments
 are already passed so are not needed here. e.g. \code{na.rm = TRUE};
